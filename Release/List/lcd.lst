@@ -1,0 +1,846 @@
+###############################################################################
+#                                                                             #
+# IAR C/C++ Compiler V5.30.0.50166/W32 for Atmel AVR    07/Oct/2011  22:12:47 #
+# Copyright 1996-2009 IAR Systems AB.                                         #
+#                                                                             #
+#    Source file  =  C:\WORK\MetDet\_source\8042C\lcd.c                       #
+#    Command line =  C:\WORK\MetDet\_source\8042C\lcd.c --cpu=tiny2313 -mt    #
+#                    -o C:\WORK\MetDet\_source\8042C\Release\Obj\ -D NDEBUG   #
+#                    -lC C:\WORK\MetDet\_source\8042C\Release\List\ -lA       #
+#                    C:\WORK\MetDet\_source\8042C\Release\List\               #
+#                    --initializers_in_flash -z9 --no_cross_call              #
+#                    -DENABLE_BIT_DEFINITIONS -e -I "C:\Program Files\IAR     #
+#                    Systems\Embedded Workbench 5.3\avr\INC\" -I "C:\Program  #
+#                    Files\IAR Systems\Embedded Workbench 5.3\avr\INC\CLIB\"  #
+#                    --eeprom_size 128                                        #
+#    List file    =  C:\WORK\MetDet\_source\8042C\Release\List\lcd.lst        #
+#    Object file  =  C:\WORK\MetDet\_source\8042C\Release\Obj\lcd.r90         #
+#                                                                             #
+#                                                                             #
+###############################################################################
+
+C:\WORK\MetDet\_source\8042C\lcd.c
+      1          /* vim: set sw=8 ts=8 si et: */
+      2          /****************************************************************************
+      3          Title	:   HD44780 LCD library
+      4          Authors:   
+      5          Based on Volker Oth's lcd library (http://members.xoom.com/volkeroth)
+      6          modified by Peter Fleury's (http://jump.to/fleury). Flexible pin
+      7          configuration by Markus Ermert. Adapted for the tuxgraphics LCD display
+      8          by Guido Socher.
+      9          
+     10          Software:  AVR-GCC with AVR-AS
+     11          Target:    any AVR device
+     12          Copyright: GPL V2
+     13                 
+     14          *****************************************************************************/
+     15          #include <ioavr.h>
+
+   \                                 In  segment ABSOLUTE, at 0x38
+   \   <__C75> volatile __io _A_PORTB
+   \                     _A_PORTB:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x37
+   \   <__C77> volatile __io _A_DDRB
+   \                     _A_DDRB:
+   \   00000000                      DS8 1
+     16          //#include <avr/pgmspace.h>
+     17          #include "timeout.h"
+     18          #include <intrinsics.h>
+     19          #include "lcd_hw.h"
+     20          #include "lcd.h"
+     21          
+     22          
+
+   \                                 In  segment NEAR_F, align 1, keep-with-next
+     23          __flash char SymbolCGRAM[48]  = {
+   \                     SymbolCGRAM:
+   \   00000000   000000000000       DC8 0, 0, 0, 0, 0, 0, 0, 0, 16, 16, 16, 16, 16, 16, 16, 16, 24, 24, 24
+   \              000010101010
+   \              101010101818
+   \              18          
+   \   00000013   181818181C18       DC8 24, 24, 24, 24, 24, 28, 28, 28, 28, 28, 28, 28, 28, 30, 30, 30, 30
+   \              1C1C1C1C1C1C
+   \              1E1C1E1E1E  
+   \   00000024   1E1E1E1E1F1F       DC8 30, 30, 30, 30, 31, 31, 31, 31, 31, 31, 31, 31
+   \              1F1F1F1F1F1F
+     24          0x00,    /*  ........  */
+     25          0x00,    /*  ........  */
+     26          0x00,    /*  ........  */
+     27          0x00,    /*  ........  */
+     28          0x00,    /*  ........  */
+     29          0x00,    /*  ........  */
+     30          0x00,    /*  ........  */
+     31          0x00,    /*  ........  */
+     32          // символ №0
+     33          0x10,    /*  ...$....  */
+     34          0x10,    /*  ...$....  */
+     35          0x10,    /*  ...$....  */
+     36          0x10,    /*  ...$....  */
+     37          0x10,    /*  ...$....  */
+     38          0x10,    /*  ...$....  */
+     39          0x10,    /*  ...$....  */
+     40          0x10,    /*  ...$....  */
+     41          // символ №1
+     42          0x18,    /*  ...$$...  */
+     43          0x18,    /*  ...$$...  */
+     44          0x18,    /*  ...$$...  */
+     45          0x18,    /*  ...$$...  */
+     46          0x18,    /*  ...$$...  */
+     47          0x18,    /*  ...$$...  */
+     48          0x18,    /*  ...$$...  */
+     49          0x18,    /*  ...$$...  */
+     50          // символ №2
+     51          0x1C,    /*  ...$$$..  */
+     52          0x1C,    /*  ...$$$..  */
+     53          0x1C,    /*  ...$$$..  */
+     54          0x1C,    /*  ...$$$..  */
+     55          0x1C,    /*  ...$$$..  */
+     56          0x1C,    /*  ...$$$..  */
+     57          0x1C,    /*  ...$$$..  */
+     58          0x1C,    /*  ...$$$..  */
+     59          // символ №3
+     60          0x1E,    /*  ...$$$$.  */
+     61          0x1E,    /*  ...$$$$.  */
+     62          0x1E,    /*  ...$$$$.  */
+     63          0x1E,    /*  ...$$$$.  */
+     64          0x1E,    /*  ...$$$$.  */
+     65          0x1E,    /*  ...$$$$.  */
+     66          0x1E,    /*  ...$$$$.  */
+     67          0x1E,    /*  ...$$$$.  */
+     68          // символ №4
+     69          0x1F,    /*  ...$$$$$  */
+     70          0x1F,    /*  ...$$$$$  */
+     71          0x1F,    /*  ...$$$$$  */
+     72          0x1F,    /*  ...$$$$$  */
+     73          0x1F,    /*  ...$$$$$  */
+     74          0x1F,    /*  ...$$$$$  */
+     75          0x1F,    /*  ...$$$$$  */
+     76          0x1F,    /*  ...$$$$$  */
+     77          // символ №5
+     78          };
+     79          
+     80          /* compatibilty macros for old style */
+     81          /*
+     82          #ifndef cbi
+     83          #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+     84          #endif
+     85          
+     86          #ifndef sbi
+     87          #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+     88          #endif
+     89          */
+     90          /* 
+     91          ** constants/macros 
+     92          */
+     93          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     94          void lcd_e_high(void) 
+   \                     lcd_e_high:
+     95          {
+     96          LCD_E_PORT |= (1<<LCD_E_PIN);
+   \   00000000   9AC2               SBI     0x18, 0x02
+     97          }
+   \   00000002   9508               RET
+   \   00000004                      REQUIRE _A_PORTB
+     98          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     99          void lcd_e_low(void)     
+   \                     lcd_e_low:
+    100          {
+    101          LCD_E_PORT &= ~(1<<LCD_E_PIN);
+   \   00000000   98C2               CBI     0x18, 0x02
+    102          }
+   \   00000002   9508               RET
+   \   00000004                      REQUIRE _A_PORTB
+    103          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    104          void lcd_cmd_mode(void)
+   \                     lcd_cmd_mode:
+    105          {
+    106          LCD_RS_PORT &= ~(1<<LCD_RS_PIN);	  // RS=0  command mode
+   \   00000000   98C3               CBI     0x18, 0x03
+    107          }
+   \   00000002   9508               RET
+   \   00000004                      REQUIRE _A_PORTB
+    108          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    109          void lcd_data_mode(void)
+   \                     lcd_data_mode:
+    110          {
+    111          LCD_RS_PORT |= (1<<LCD_RS_PIN); // RS=1  data mode 
+   \   00000000   9AC3               SBI     0x18, 0x03
+    112          }
+   \   00000002   9508               RET
+   \   00000004                      REQUIRE _A_PORTB
+    113          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    114          void lcd_data_port_out(void)	
+   \                     lcd_data_port_out:
+    115          {	/* defines all data pins as output */ 
+    116          LCD_DATA_DDR_D7 |= (1<<LCD_DATA_PIN_D7);
+   \   00000000   9ABF               SBI     0x17, 0x07
+    117          LCD_DATA_DDR_D6 |= (1<<LCD_DATA_PIN_D6);
+   \   00000002   9ABE               SBI     0x17, 0x06
+    118          LCD_DATA_DDR_D5 |= (1<<LCD_DATA_PIN_D5);
+   \   00000004   9ABD               SBI     0x17, 0x05
+    119          LCD_DATA_DDR_D4 |= (1<<LCD_DATA_PIN_D4);
+   \   00000006   9ABC               SBI     0x17, 0x04
+    120          }
+   \   00000008   9508               RET
+   \   0000000A                      REQUIRE _A_DDRB
+    121          
+    122          #if LCD_LINES==1
+    123          #define LCD_FUNCTION_DEFAULT    LCD_FUNCTION_4BIT_1LINE
+    124          #else
+    125          #define LCD_FUNCTION_DEFAULT    LCD_FUNCTION_4BIT_2LINES
+    126          #endif
+    127          
+    128          
+    129          /* 
+    130          ** function prototypes 
+    131          */
+    132          static void lcd_e_toggle(void);
+    133          static void lcd_out_high(u08 d);
+    134          static void lcd_out_low(u08 d);
+    135          
+    136          /*
+    137          ** local functions
+    138          */
+    139          
+    140          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    141          static void lcd_out_low(u08 d)
+   \                     lcd_out_low:
+    142          {	/* output low nibble */
+    143          	if (d&0x08)  LCD_DATA_PORT_D7 |= (1<<LCD_DATA_PIN_D7);
+   \   00000000   FB03               BST     R16, 3
+   \   00000002   F416               BRTC    ??lcd_out_low_0
+   \   00000004   9AC7               SBI     0x18, 0x07
+   \   00000006   C001               RJMP    ??lcd_out_low_1
+    144          		else LCD_DATA_PORT_D7 &= ~(1<<LCD_DATA_PIN_D7);
+   \                     ??lcd_out_low_0:
+   \   00000008   98C7               CBI     0x18, 0x07
+    145          	if (d&0x04)  LCD_DATA_PORT_D6 |= (1<<LCD_DATA_PIN_D6);
+   \                     ??lcd_out_low_1:
+   \   0000000A   FB02               BST     R16, 2
+   \   0000000C   F416               BRTC    ??lcd_out_low_2
+   \   0000000E   9AC6               SBI     0x18, 0x06
+   \   00000010   C001               RJMP    ??lcd_out_low_3
+    146          		else LCD_DATA_PORT_D6 &= ~(1<<LCD_DATA_PIN_D6);
+   \                     ??lcd_out_low_2:
+   \   00000012   98C6               CBI     0x18, 0x06
+    147          	if (d&0x02)  LCD_DATA_PORT_D5 |= (1<<LCD_DATA_PIN_D5);
+   \                     ??lcd_out_low_3:
+   \   00000014   FB01               BST     R16, 1
+   \   00000016   F416               BRTC    ??lcd_out_low_4
+   \   00000018   9AC5               SBI     0x18, 0x05
+   \   0000001A   C001               RJMP    ??lcd_out_low_5
+    148          		else LCD_DATA_PORT_D5 &= ~(1<<LCD_DATA_PIN_D5);
+   \                     ??lcd_out_low_4:
+   \   0000001C   98C5               CBI     0x18, 0x05
+    149          	if (d&0x01)  LCD_DATA_PORT_D4 |= (1<<LCD_DATA_PIN_D4);
+   \                     ??lcd_out_low_5:
+   \   0000001E   FB00               BST     R16, 0
+   \   00000020   F40E               BRTC    ??lcd_out_low_6
+   \   00000022   ....               RJMP    ?Subroutine2
+    150          		else LCD_DATA_PORT_D4 &= ~(1<<LCD_DATA_PIN_D4); 
+   \                     ??lcd_out_low_6:
+   \   00000024   ....               RJMP    ?Subroutine1
+   \   00000026                      REQUIRE _A_PORTB
+    151          }
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine2:
+   \   00000000   9AC4               SBI     0x18, 0x04
+   \   00000002   9508               RET
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine1:
+   \   00000000   98C4               CBI     0x18, 0x04
+   \   00000002   9508               RET
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    152          static void lcd_out_high(u08 d)
+   \                     lcd_out_high:
+    153          {	/* output high nibble */ 
+    154          	if (d&0x80)  LCD_DATA_PORT_D7 |= (1<<LCD_DATA_PIN_D7);
+   \   00000000   FB07               BST     R16, 7
+   \   00000002   F416               BRTC    ??lcd_out_high_0
+   \   00000004   9AC7               SBI     0x18, 0x07
+   \   00000006   C001               RJMP    ??lcd_out_high_1
+    155          		else LCD_DATA_PORT_D7 &= ~(1<<LCD_DATA_PIN_D7);
+   \                     ??lcd_out_high_0:
+   \   00000008   98C7               CBI     0x18, 0x07
+    156          	if (d&0x40)  LCD_DATA_PORT_D6 |= (1<<LCD_DATA_PIN_D6);
+   \                     ??lcd_out_high_1:
+   \   0000000A   FB06               BST     R16, 6
+   \   0000000C   F416               BRTC    ??lcd_out_high_2
+   \   0000000E   9AC6               SBI     0x18, 0x06
+   \   00000010   C001               RJMP    ??lcd_out_high_3
+    157          		else LCD_DATA_PORT_D6 &= ~(1<<LCD_DATA_PIN_D6);
+   \                     ??lcd_out_high_2:
+   \   00000012   98C6               CBI     0x18, 0x06
+    158          	if (d&0x20)  LCD_DATA_PORT_D5 |= (1<<LCD_DATA_PIN_D5);
+   \                     ??lcd_out_high_3:
+   \   00000014   FB05               BST     R16, 5
+   \   00000016   F416               BRTC    ??lcd_out_high_4
+   \   00000018   9AC5               SBI     0x18, 0x05
+   \   0000001A   C001               RJMP    ??lcd_out_high_5
+    159          		else LCD_DATA_PORT_D5 &= ~(1<<LCD_DATA_PIN_D5);
+   \                     ??lcd_out_high_4:
+   \   0000001C   98C5               CBI     0x18, 0x05
+    160          	if (d&0x10)  LCD_DATA_PORT_D4 |= (1<<LCD_DATA_PIN_D4);
+   \                     ??lcd_out_high_5:
+   \   0000001E   FB04               BST     R16, 4
+   \   00000020   F40E               BRTC    ??lcd_out_high_6
+   \   00000022   ....               RJMP    ?Subroutine2
+    161          		else LCD_DATA_PORT_D4 &= ~(1<<LCD_DATA_PIN_D4); 
+   \                     ??lcd_out_high_6:
+   \   00000024   ....               RJMP    ?Subroutine1
+   \   00000026                      REQUIRE _A_PORTB
+    162          }
+    163          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    164          static void lcd_e_toggle(void)
+   \                     lcd_e_toggle:
+    165          /* toggle Enable Pin */
+    166          {
+    167          	lcd_e_high();
+   \   00000000   9AC2               SBI     0x18, 0x02
+    168          	__delay_cycles((CtrlClockRate/1000000)*5);
+   \   00000002   E100               LDI     R16, 16
+   \   00000004   950A               DEC     R16
+   \   00000006   F7F1               BRNE    $-2
+   \   00000008   C000               RJMP    $+2
+    169          	lcd_e_low();
+   \   0000000A   98C2               CBI     0x18, 0x02
+    170          	__delay_cycles((CtrlClockRate/1000000)*1);
+   \   0000000C   E003               LDI     R16, 3
+   \   0000000E   950A               DEC     R16
+   \   00000010   F7F1               BRNE    $-2
+   \   00000012   0000               NOP
+    171          }
+   \   00000014   9508               RET
+   \   00000016                      REQUIRE _A_PORTB
+    172          
+    173          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    174          static void lcd_write(u08 data, u08 rs)
+   \                     lcd_write:
+    175          {
+   \   00000000   ....               RCALL   ?PROLOGUE2_L09
+   \   00000002   2F90               MOV     R25, R16
+   \   00000004   2F81               MOV     R24, R17
+    176          	/* configure data pins as output */
+    177          	lcd_data_port_out();
+   \   00000006   ....               RCALL   lcd_data_port_out
+    178          	__delay_cycles((CtrlClockRate/1000000)*8);
+   \   00000008   E10A               LDI     R16, 26
+   \   0000000A   950A               DEC     R16
+   \   0000000C   F7F1               BRNE    $-2
+   \   0000000E   C000               RJMP    $+2
+    179          
+    180          	/* output high nibble first */
+    181          
+    182          	lcd_out_high(data);
+   \   00000010   2F09               MOV     R16, R25
+   \   00000012   ....               RCALL   lcd_out_high
+    183          	__delay_cycles((CtrlClockRate/1000000)*8);
+   \   00000014   E10A               LDI     R16, 26
+   \   00000016   950A               DEC     R16
+   \   00000018   F7F1               BRNE    $-2
+   \   0000001A   C000               RJMP    $+2
+    184          
+    185          	if (rs)
+   \   0000001C   2388               TST     R24
+   \   0000001E   F011               BREQ    ??lcd_write_0
+    186          		lcd_data_mode();	/* RS=1: write data            */
+   \   00000020   9AC3               SBI     0x18, 0x03
+   \   00000022   C001               RJMP    ??lcd_write_1
+    187          	else
+    188          		lcd_cmd_mode();	/* RS=0: write instruction     */
+   \                     ??lcd_write_0:
+   \   00000024   98C3               CBI     0x18, 0x03
+    189          	lcd_e_toggle();
+   \                     ??lcd_write_1:
+   \   00000026   ....               RCALL   lcd_e_toggle
+    190          
+    191          	/* output low nibble */
+    192          	lcd_out_low(data);
+   \   00000028   2F09               MOV     R16, R25
+   \   0000002A   ....               RCALL   lcd_out_low
+    193          	__delay_cycles((CtrlClockRate/1000000)*8);
+   \   0000002C   E10A               LDI     R16, 26
+   \   0000002E   950A               DEC     R16
+   \   00000030   F7F1               BRNE    $-2
+   \   00000032   C000               RJMP    $+2
+    194          
+    195          	if (rs)
+   \   00000034   2388               TST     R24
+   \   00000036   F011               BREQ    ??lcd_write_2
+    196          		lcd_data_mode();	/* RS=1: write data            */
+   \   00000038   9AC3               SBI     0x18, 0x03
+   \   0000003A   C001               RJMP    ??lcd_write_3
+    197          	else
+    198          		lcd_cmd_mode();	/* RS=0: write instruction     */
+   \                     ??lcd_write_2:
+   \   0000003C   98C3               CBI     0x18, 0x03
+    199          
+    200          	lcd_e_toggle();
+   \                     ??lcd_write_3:
+   \   0000003E   ....               RCALL   lcd_e_toggle
+    201          }
+   \   00000040                      REQUIRE ?Subroutine3
+   \   00000040                      REQUIRE _A_PORTB
+   \   00000040                      ;               // Fall through to label ?Subroutine3
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine3:
+   \   00000000   E0E2               LDI     R30, 2
+   \   00000002   ....               RJMP    ?EPILOGUE_B2_L09
+    202          
+    203          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    204          static unsigned char lcd_waitcmd(unsigned char cmdwait)
+   \                     lcd_waitcmd:
+    205          /* this function used to loop while lcd is busy and read address i
+    206           * counter however for this we need the RW line. This function
+    207           * has been changed to just delay a bit. In that case the LCD
+    208           * is only slightly slower but we do not need the RW pin. */
+    209          {
+    210                  __delay_cycles((CtrlClockRate/1000000)*9);
+   \   00000000   E11E               LDI     R17, 30
+   \   00000002   951A               DEC     R17
+   \   00000004   F7F1               BRNE    $-2
+    211          	/* the display needs much longer to process a command */
+    212          	if (cmdwait){
+   \   00000006   2300               TST     R16
+   \   00000008   F039               BREQ    ??lcd_waitcmd_0
+    213          		__delay_cycles((CtrlClockRate/1000)*2);
+   \   0000000A   E807               LDI     R16, 135
+   \   0000000C   E113               LDI     R17, 19
+   \   0000000E   5001               SUBI    R16, 1
+   \   00000010   4010               SBCI    R17, 0
+   \   00000012   F7E9               BRNE    $-4
+   \   00000014   C000               RJMP    $+2
+   \   00000016   0000               NOP
+    214          	}
+    215          	return (0); 
+   \                     ??lcd_waitcmd_0:
+   \   00000018   E000               LDI     R16, 0
+   \   0000001A   9508               RET
+    216          }
+    217          
+    218          
+    219          /*
+    220          ** PUBLIC FUNCTIONS 
+    221          */
+    222          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    223          void lcd_command(u08 cmd)
+   \                     lcd_command:
+    224          /* send commando <cmd> to LCD */
+    225          {
+   \   00000000   938A               ST      -Y, R24
+   \   00000002   2F80               MOV     R24, R16
+    226          	lcd_waitcmd(0);
+   \   00000004   E000               LDI     R16, 0
+   \   00000006   ....               RCALL   lcd_waitcmd
+    227          	lcd_write(cmd, 0);
+   \   00000008   E010               LDI     R17, 0
+   \   0000000A   2F08               MOV     R16, R24
+   \   0000000C   ....               RCALL   lcd_write
+    228          	lcd_waitcmd(1);
+   \   0000000E   E001               LDI     R16, 1
+   \   00000010   ....               RJMP    ?Subroutine0
+    229          }
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ?Subroutine0:
+   \   00000000   ....               RCALL   lcd_waitcmd
+   \   00000002                      REQUIRE ??Subroutine4_0
+   \   00000002                      ;               // Fall through to label ??Subroutine4_0
+
+   \                                 In  segment CODE, align 2, keep-with-next
+   \                     ??Subroutine4_0:
+   \   00000000   9189               LD      R24, Y+
+   \   00000002   9508               RET
+    230          
+    231          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    232          void lcd_gotoxy(u08 x, u08 y)
+   \                     lcd_gotoxy:
+    233          /* goto position (x,y) */
+    234          {
+    235          #if LCD_LINES==1
+    236          	lcd_command((1 << LCD_DDRAM) + LCD_START_LINE1 + x);
+    237          #endif
+    238          #if LCD_LINES==2
+    239          	if (y == 0)
+   \   00000000   2311               TST     R17
+   \   00000002   F411               BRNE    ??lcd_gotoxy_0
+    240          		lcd_command((1 << LCD_DDRAM) + LCD_START_LINE1 + x);
+   \   00000004   5800               SUBI    R16, 128
+   \   00000006   ....               RJMP    lcd_command
+    241          	else
+    242          		lcd_command((1 << LCD_DDRAM) + LCD_START_LINE2 + x);
+   \                     ??lcd_gotoxy_0:
+   \   00000008   5400               SUBI    R16, 64
+   \   0000000A   ....               RJMP    lcd_command
+    243          #endif
+    244          #if LCD_LINES==3
+    245          	if (y == 0)
+    246          		lcd_command((1 << LCD_DDRAM) + LCD_START_LINE1 + x);
+    247          	else if (y == 1)
+    248          		lcd_command((1 << LCD_DDRAM) + LCD_START_LINE2 + x);
+    249          	else if (y == 2)
+    250          		lcd_command((1 << LCD_DDRAM) + LCD_START_LINE3 + x);
+    251          #endif
+    252          #if LCD_LINES==4
+    253          	if (y == 0)
+    254          		lcd_command((1 << LCD_DDRAM) + LCD_START_LINE1 + x);
+    255          	else if (y == 1)
+    256          		lcd_command((1 << LCD_DDRAM) + LCD_START_LINE2 + x);
+    257          	else if (y == 2)
+    258          		lcd_command((1 << LCD_DDRAM) + LCD_START_LINE3 + x);
+    259          	else			/* y==3 */
+    260          		lcd_command((1 << LCD_DDRAM) + LCD_START_LINE4 + x);
+    261          #endif
+    262          
+    263          }				/* lcd_gotoxy */
+    264          
+    265          
+    266          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    267          void lcd_putc(char c)
+   \                     lcd_putc:
+    268          /* print character at current cursor position */
+    269          {
+   \   00000000   938A               ST      -Y, R24
+   \   00000002   2F80               MOV     R24, R16
+    270          	lcd_waitcmd(0);
+   \   00000004   E000               LDI     R16, 0
+   \   00000006   ....               RCALL   lcd_waitcmd
+    271          	lcd_write((unsigned char)c, 1);
+   \   00000008   E011               LDI     R17, 1
+   \   0000000A   2F08               MOV     R16, R24
+   \   0000000C   ....               RCALL   lcd_write
+    272          	lcd_waitcmd(0);
+   \   0000000E   E000               LDI     R16, 0
+   \   00000010   ....               RJMP    ?Subroutine0
+    273          }
+    274          
+    275          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    276          void lcd_puts(const char *s)
+   \                     lcd_puts:
+    277          /* print string on lcd  */
+    278          {
+   \   00000000   93AA               ST      -Y, R26
+   \   00000002   2FA0               MOV     R26, R16
+   \   00000004   C002               RJMP    ??lcd_puts_0
+    279          	while (*s) {
+    280          		lcd_putc(*s);
+   \                     ??lcd_puts_1:
+   \   00000006   910D               LD      R16, X+
+   \   00000008   ....               RCALL   lcd_putc
+    281          		s++;
+    282          	}
+   \                     ??lcd_puts_0:
+   \   0000000A   910C               LD      R16, X
+   \   0000000C   2300               TST     R16
+   \   0000000E   F7D9               BRNE    ??lcd_puts_1
+    283          
+    284          }
+   \   00000010   91A9               LD      R26, Y+
+   \   00000012   9508               RET
+    285          
+    286          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    287          void lcd_puts_p(const char __flash *progmem_s)
+   \                     lcd_puts_p:
+    288          /* print string from program memory on lcd  */
+    289          {
+   \   00000000   ....               RCALL   ?PROLOGUE2_L09
+   \   00000002   01C8               MOVW    R25:R24, R17:R16
+   \   00000004   C001               RJMP    ??lcd_puts_p_0
+    290          	register char c;
+    291          
+    292          	while (c = (*(unsigned char __flash *)(progmem_s++))) { 
+    293          		lcd_putc(c);
+   \                     ??lcd_puts_p_1:
+   \   00000006   ....               RCALL   lcd_putc
+    294          	}
+   \                     ??lcd_puts_p_0:
+   \   00000008   01FC               MOVW    R31:R30, R25:R24
+   \   0000000A   9115               LPM     R17, Z+
+   \   0000000C   01CF               MOVW    R25:R24, R31:R30
+   \   0000000E   2F01               MOV     R16, R17
+   \   00000010   2311               TST     R17
+   \   00000012   F7C9               BRNE    ??lcd_puts_p_1
+    295          
+    296          }
+   \   00000014   ....               RJMP    ?Subroutine3
+    297          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    298          void InitCGram(void) // инициализация области CGRAM
+   \                     InitCGram:
+    299          {
+   \   00000000   938A               ST      -Y, R24
+    300          unsigned char i;
+    301          lcd_write(0x40, 0); // установка видео-адреса в области CGRAM
+   \   00000002   E010               LDI     R17, 0
+   \   00000004   E400               LDI     R16, 64
+   \   00000006   ....               RCALL   lcd_write
+    302          __delay_cycles((CtrlClockRate/1000000)*100);
+   \   00000008   EF0A               LDI     R16, 250
+   \   0000000A   0000               NOP
+   \   0000000C   950A               DEC     R16
+   \   0000000E   F7E9               BRNE    $-4
+    303          for(i=0;i<sizeof(SymbolCGRAM);i++) 
+   \   00000010   E080               LDI     R24, 0
+    304          {
+    305          lcd_write(SymbolCGRAM[i],1); // загрузка символов в CGRAM
+   \                     ??InitCGram_0:
+   \   00000012   E011               LDI     R17, 1
+   \   00000014   E0F0               LDI     R31, 0
+   \   00000016   2FE8               MOV     R30, R24
+   \   00000018   ....               SUBI    R30, LOW((-(SymbolCGRAM) & 0xFFFF))
+   \   0000001A   ....               SBCI    R31, (-(SymbolCGRAM) & 0xFFFF) >> 8
+   \   0000001C   9104               LPM     R16, Z
+   \   0000001E   ....               RCALL   lcd_write
+    306          __delay_cycles((CtrlClockRate/1000000)*100);
+   \   00000020   EF0A               LDI     R16, 250
+   \   00000022   0000               NOP
+   \   00000024   950A               DEC     R16
+   \   00000026   F7E9               BRNE    $-4
+    307          }
+   \   00000028   9583               INC     R24
+   \   0000002A   3380               CPI     R24, 48
+   \   0000002C   F390               BRCS    ??InitCGram_0
+    308          }
+   \   0000002E   ....               RJMP    ??Subroutine4_0
+    309          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    310          void lcd_init(u08 dispAttr)
+   \                     lcd_init:
+    311          /* initialize display and select type of cursor */
+    312          /* dispAttr: LCD_DISP_OFF, LCD_DISP_ON, LCD_DISP_ON_CURSOR, LCD_DISP_CURSOR_BLINK */
+    313          {
+   \   00000000   938A               ST      -Y, R24
+   \   00000002   2F80               MOV     R24, R16
+    314              /*------ Initialize lcd to 4 bit i/o mode -------*/
+    315          
+    316          	lcd_data_port_out();	/* all data port bits as output */
+   \   00000004   ....               RCALL   lcd_data_port_out
+    317          	LCD_RS_DDR |= (1<<LCD_RS_PIN);	/* RS pin as output */
+   \   00000006   9ABB               SBI     0x17, 0x03
+    318          	LCD_E_DDR |= (1<<LCD_E_PIN);	/* E  pin as output */
+   \   00000008   9ABA               SBI     0x17, 0x02
+    319          
+    320          
+    321          	//sbi(LCD_RS_PORT, LCD_RS_PIN);	/* RS pin as 1 */
+    322          	//sbi(LCD_E_PORT, LCD_E_PIN);	/* E  pin as 1 */
+    323          
+    324          	__delay_cycles((CtrlClockRate/1000)*15);	/* wait 12ms or more after power-on       */
+   \   0000000A   E70B               LDI     R16, 123
+   \   0000000C   E912               LDI     R17, 146
+   \   0000000E   5001               SUBI    R16, 1
+   \   00000010   4010               SBCI    R17, 0
+   \   00000012   F7E9               BRNE    $-4
+   \   00000014   C000               RJMP    $+2
+   \   00000016   0000               NOP
+    325          
+    326          	/* initial write to lcd is 8bit */
+    327          	lcd_out_high(LCD_FUNCTION_8BIT_1LINE);
+   \   00000018   E300               LDI     R16, 48
+   \   0000001A   ....               RCALL   lcd_out_high
+    328          	lcd_e_toggle();
+   \   0000001C   ....               RCALL   lcd_e_toggle
+    329          	__delay_cycles((CtrlClockRate/1000)*2);	/* delay, busy flag can't be checked here */
+   \   0000001E   E807               LDI     R16, 135
+   \   00000020   E113               LDI     R17, 19
+   \   00000022   5001               SUBI    R16, 1
+   \   00000024   4010               SBCI    R17, 0
+   \   00000026   F7E9               BRNE    $-4
+   \   00000028   C000               RJMP    $+2
+   \   0000002A   0000               NOP
+    330          
+    331          	lcd_out_high(LCD_FUNCTION_8BIT_1LINE);
+   \   0000002C   E300               LDI     R16, 48
+   \   0000002E   ....               RCALL   lcd_out_high
+    332          	lcd_e_toggle();
+   \   00000030   ....               RCALL   lcd_e_toggle
+    333          	__delay_cycles((CtrlClockRate/1000)*2);	/* delay, busy flag can't be checked here */
+   \   00000032   E807               LDI     R16, 135
+   \   00000034   E113               LDI     R17, 19
+   \   00000036   5001               SUBI    R16, 1
+   \   00000038   4010               SBCI    R17, 0
+   \   0000003A   F7E9               BRNE    $-4
+   \   0000003C   C000               RJMP    $+2
+   \   0000003E   0000               NOP
+    334          
+    335          	lcd_out_high(LCD_FUNCTION_8BIT_1LINE);
+   \   00000040   E300               LDI     R16, 48
+   \   00000042   ....               RCALL   lcd_out_high
+    336          	lcd_e_toggle();
+   \   00000044   ....               RCALL   lcd_e_toggle
+    337          	__delay_cycles((CtrlClockRate/1000)*2);	/* delay, busy flag can't be checked here */
+   \   00000046   E807               LDI     R16, 135
+   \   00000048   E113               LDI     R17, 19
+   \   0000004A   5001               SUBI    R16, 1
+   \   0000004C   4010               SBCI    R17, 0
+   \   0000004E   F7E9               BRNE    $-4
+   \   00000050   C000               RJMP    $+2
+   \   00000052   0000               NOP
+    338          
+    339          	lcd_out_high(LCD_FUNCTION_4BIT_1LINE);	/* set IO mode to 4bit */
+   \   00000054   E200               LDI     R16, 32
+   \   00000056   ....               RCALL   lcd_out_high
+    340          	lcd_e_toggle();
+   \   00000058   ....               RCALL   lcd_e_toggle
+    341          	
+    342          		// main init for 4-bit interface
+    343          	//unsigned char i = 0;
+    344          	//for (i = 0; i < sizeof(byte_init); i++) lcd_write(byte_init[i], 0);
+    345          	
+    346          	
+    347          	/* from now the lcd only accepts 4 bit I/O, we can use lcd_command() */
+    348          	lcd_command(LCD_FUNCTION_DEFAULT);	/* function set: display lines  */
+   \   0000005A   E208               LDI     R16, 40
+   \   0000005C   ....               RCALL   lcd_command
+    349          	lcd_command(LCD_DISP_OFF);	/* display off                  */
+   \   0000005E   E008               LDI     R16, 8
+   \   00000060   ....               RCALL   lcd_command
+    350          	lcd_clrscr();		/* display clear                */
+   \   00000062   E001               LDI     R16, 1
+   \   00000064   ....               RCALL   lcd_command
+    351          	lcd_command(LCD_MODE_DEFAULT);	/* set entry mode               */
+   \   00000066   E006               LDI     R16, 6
+   \   00000068   ....               RCALL   lcd_command
+    352          	lcd_command(dispAttr);	/* display/cursor control       */
+   \   0000006A   2F08               MOV     R16, R24
+   \   0000006C   ....               RCALL   lcd_command
+    353          	lcd_waitcmd(1);
+   \   0000006E   E001               LDI     R16, 1
+   \   00000070   ....               RCALL   lcd_waitcmd
+    354                  InitCGram();
+   \   00000072   ....               RCALL   InitCGram
+    355          }
+   \   00000074   ....               RJMP    ??Subroutine4_0
+   \   00000076                      REQUIRE _A_DDRB
+
+   Maximum stack usage in bytes:
+
+     Function               CSTACK RSTACK
+     --------               ------ ------
+     InitCGram                  2      2
+       -> lcd_write             2      2
+       -> lcd_write             2      2
+     lcd_cmd_mode               0      2
+     lcd_command                1      2
+       -> lcd_waitcmd           1      2
+       -> lcd_write             1      2
+       -> lcd_waitcmd           1      2
+     lcd_data_mode              0      2
+     lcd_data_port_out          0      2
+     lcd_e_high                 0      2
+     lcd_e_low                  0      2
+     lcd_e_toggle               0      2
+     lcd_gotoxy                 0      2
+       -> lcd_command           0      2
+       -> lcd_command           0      2
+     lcd_init                   1      2
+       -> lcd_data_port_out     1      2
+       -> lcd_out_high          1      2
+       -> lcd_e_toggle          1      2
+       -> lcd_out_high          1      2
+       -> lcd_e_toggle          1      2
+       -> lcd_out_high          1      2
+       -> lcd_e_toggle          1      2
+       -> lcd_out_high          1      2
+       -> lcd_e_toggle          1      2
+       -> lcd_command           1      2
+       -> lcd_command           1      2
+       -> lcd_command           1      2
+       -> lcd_command           1      2
+       -> lcd_command           1      2
+       -> lcd_waitcmd           1      2
+       -> InitCGram             1      2
+     lcd_out_high               0      2
+     lcd_out_low                0      2
+     lcd_putc                   1      2
+       -> lcd_waitcmd           1      2
+       -> lcd_write             1      2
+       -> lcd_waitcmd           1      2
+     lcd_puts                   1      2
+       -> lcd_putc              1      2
+     lcd_puts_p                 2      2
+       -> lcd_putc              2      2
+     lcd_waitcmd                0      2
+     lcd_write                  2      2
+       -> lcd_data_port_out     2      2
+       -> lcd_out_high          2      2
+       -> lcd_e_toggle          2      2
+       -> lcd_out_low           2      2
+       -> lcd_e_toggle          2      2
+
+
+   Segment part sizes:
+
+     Function/Label    Bytes
+     --------------    -----
+     _A_PORTB             1
+     _A_DDRB              1
+     SymbolCGRAM         48
+     lcd_e_high           4
+     lcd_e_low            4
+     lcd_cmd_mode         4
+     lcd_data_mode        4
+     lcd_data_port_out   10
+     lcd_out_low         38
+     ?Subroutine2         4
+     ?Subroutine1         4
+     lcd_out_high        38
+     lcd_e_toggle        22
+     lcd_write           64
+     ?Subroutine3         4
+     lcd_waitcmd         28
+     lcd_command         18
+     ?Subroutine0         2
+     ??Subroutine4_0      4
+     lcd_gotoxy          12
+     lcd_putc            18
+     lcd_puts            20
+     lcd_puts_p          22
+     InitCGram           48
+     lcd_init           118
+
+ 
+   2 bytes in segment ABSOLUTE
+ 490 bytes in segment CODE
+  48 bytes in segment NEAR_F
+ 
+ 538 bytes of CODE memory
+   0 bytes of DATA memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

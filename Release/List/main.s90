@@ -1,0 +1,1844 @@
+///////////////////////////////////////////////////////////////////////////////
+//                                                                            /
+// IAR C/C++ Compiler V5.30.0.50166/W32 for Atmel AVR   13/Feb/2012  22:26:39 /
+// Copyright 1996-2009 IAR Systems AB.                                        /
+//                                                                            /
+//    Source file  =  C:\WORK\MetDet\_source\8042C\main.c                     /
+//    Command line =  C:\WORK\MetDet\_source\8042C\main.c --cpu=tiny2313 -mt  /
+//                    -o C:\WORK\MetDet\_source\8042C\Release\Obj\ -D NDEBUG  /
+//                    -lC C:\WORK\MetDet\_source\8042C\Release\List\ -lA      /
+//                    C:\WORK\MetDet\_source\8042C\Release\List\              /
+//                    --initializers_in_flash -z9 --no_cross_call             /
+//                    -DENABLE_BIT_DEFINITIONS -e -I "C:\Program Files\IAR    /
+//                    Systems\Embedded Workbench 5.3\avr\INC\" -I             /
+//                    "C:\Program Files\IAR Systems\Embedded Workbench        /
+//                    5.3\avr\INC\CLIB\" --eeprom_size 128                    /
+//    List file    =  C:\WORK\MetDet\_source\8042C\Release\List\main.s90      /
+//                                                                            /
+//                                                                            /
+///////////////////////////////////////////////////////////////////////////////
+
+        NAME main
+
+        RTMODEL "__64bit_doubles", "disabled"
+        RTMODEL "__cpu", "0"
+        RTMODEL "__cpu_name", "ATtiny2313"
+        RTMODEL "__enhanced_core", "enabled"
+        RTMODEL "__has_elpm", "false"
+        RTMODEL "__memory_model", "1"
+        RTMODEL "__rt_version", "3"
+
+        RSEG CSTACK:DATA:NOROOT(0)
+        RSEG RSTACK:DATA:NOROOT(0)
+
+        EXTERN ?EPILOGUE_B10_L09
+        EXTERN ?EPILOGUE_B2_L09
+        EXTERN ?PROLOGUE10_L09
+        EXTERN ?PROLOGUE2_L09
+        EXTERN ?Register_R4_is_cg_reg
+        EXTERN ?Register_R5_is_cg_reg
+        EXTERN ?Register_R6_is_cg_reg
+        EXTERN ?Register_R7_is_cg_reg
+        EXTERN ?Register_R8_is_cg_reg
+        EXTERN ?Register_R9_is_cg_reg
+        EXTERN ?SS_DIVMOD_L02
+        EXTERN ?S_MUL_L02
+        EXTERN ?UL_SHR_L03
+        EXTERN ?need_segment_init
+
+        PUBWEAK `?<Segment init: TINY_Z>`
+        PUBWEAK `??KeyDrive??INTVEC 8`
+        PUBWEAK `??Sound??INTVEC 12`
+        PUBLIC ArrayReceivedSignal
+        PUBLIC BaseValue
+        PUBLIC CharToStringDec
+        FUNCTION CharToStringDec,0203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC DelayUnits
+        FUNCTION DelayUnits,0203H
+        ARGFRAME RSTACK, 0, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC Echo
+        PUBLIC EchoSumm
+        PUBWEAK GetPotPosition
+        FUNCTION GetPotPosition,0203H
+        ARGFRAME RSTACK, 0, STACK
+        LOCFRAME CSTACK, 2, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC InitMode
+        FUNCTION InitMode,0203H
+        ARGFRAME RSTACK, 0, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC InitPorts
+        FUNCTION InitPorts,0203H
+        ARGFRAME RSTACK, 0, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC InitTimers
+        FUNCTION InitTimers,0203H
+        ARGFRAME RSTACK, 0, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC InitUsart
+        FUNCTION InitUsart,0203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC Integrator
+        PUBLIC IntegratorCycleCount
+        PUBLIC IntegratorCycleEnd
+        PUBLIC KeyDrive
+        FUNCTION KeyDrive,021233H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 18, STACK
+        LOCFRAME RSTACK, 4, STACK
+        PUBLIC LCDPrescaler
+        PUBLIC LedBarUpdate
+        FUNCTION LedBarUpdate,0203H
+        ARGFRAME RSTACK, 0, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC LowBatIndicationLoop
+        FUNCTION LowBatIndicationLoop,0203H
+        ARGFRAME RSTACK, 0, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC ReceivedSignal
+        PUBLIC Sensitivity
+        PUBLIC Sound
+        FUNCTION Sound,0233H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 4, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC SoundCycleCount
+        PUBLIC String
+        PUBLIC TimeGuardAfterRXON
+        PUBLIC TimeGuardAfterTXOFF
+        PUBLIC TimeIntegration
+        PUBLIC TimeTX
+        PUBLIC ToneNumber
+        PUBLIC USARTSendChar
+        FUNCTION USARTSendChar,0203H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBWEAK _A_ACSR
+        PUBWEAK _A_DDRB
+        PUBWEAK _A_DDRD
+        PUBWEAK _A_ICR1
+        PUBWEAK _A_OCR1A
+        PUBWEAK _A_PIND
+        PUBWEAK _A_PORTB
+        PUBWEAK _A_PORTD
+        PUBWEAK _A_TCCR0B
+        PUBWEAK _A_TCCR1A
+        PUBWEAK _A_TCCR1B
+        PUBWEAK _A_TCNT0
+        PUBWEAK _A_TIMSK
+        PUBWEAK _A_UBRRH
+        PUBWEAK _A_UBRRL
+        PUBWEAK _A_UCSRB
+        PUBWEAK _A_WDTCR
+        PUBWEAK __?EEARL
+        PUBWEAK __?EECR
+        PUBWEAK __?EEDR
+        PUBLIC __watchdog_init
+        FUNCTION __watchdog_init,0203H
+        ARGFRAME RSTACK, 0, STACK
+        LOCFRAME RSTACK, 2, STACK
+        PUBLIC main
+        FUNCTION main,021a03H
+        ARGFRAME CSTACK, 0, STACK
+        LOCFRAME CSTACK, 10, STACK
+        LOCFRAME RSTACK, 4, STACK
+        PUBLIC segmentsDec
+        
+        CFI Names cfiNames0
+        CFI StackFrame CFA_R28 R28 DATA
+        CFI StackFrame CFA_SP SP DATA
+        CFI VirtualResource ?RetPad:1, ?RetHigh:8, ?RetLow:8, ?Ret:17
+        CFI Resource R0:8, R1:8, R2:8, R3:8, R4:8, R5:8, R6:8, R7:8, R8:8, R9:8
+        CFI Resource R10:8, R11:8, R12:8, R13:8, R14:8, R15:8, R16:8, R17:8
+        CFI Resource R18:8, R19:8, R20:8, R21:8, R22:8, R23:8, R24:8, R25:8
+        CFI Resource R26:8, R27:8, R28:8, R29:8, R30:8, R31:8
+        CFI Resource ?RetHighByteMask:8, SP:8
+        CFI ResourceParts ?Ret ?RetHigh, ?RetLow, ?RetPad
+        CFI EndNames cfiNames0
+        
+        CFI Common cfiCommon0 Using cfiNames0
+        CFI CodeAlign 1
+        CFI DataAlign 1
+        CFI ReturnAddress ?Ret CODE
+        CFI CFA_R28 R28+0
+        CFI CFA_SP SP+2
+        CFI ?RetPad 0
+        CFI ?RetHigh and(load(1, DATA, sub(CFA_SP, 1)), ?RetHighByteMask)
+        CFI ?RetLow Frame(CFA_SP, 0)
+        CFI ?Ret Concat
+        CFI R0 Undefined
+        CFI R1 Undefined
+        CFI R2 Undefined
+        CFI R3 Undefined
+        CFI R4 SameValue
+        CFI R5 SameValue
+        CFI R6 SameValue
+        CFI R7 SameValue
+        CFI R8 SameValue
+        CFI R9 SameValue
+        CFI R10 SameValue
+        CFI R11 SameValue
+        CFI R12 SameValue
+        CFI R13 SameValue
+        CFI R14 SameValue
+        CFI R15 SameValue
+        CFI R16 Undefined
+        CFI R17 Undefined
+        CFI R18 Undefined
+        CFI R19 Undefined
+        CFI R20 Undefined
+        CFI R21 Undefined
+        CFI R22 Undefined
+        CFI R23 Undefined
+        CFI R24 SameValue
+        CFI R25 SameValue
+        CFI R26 SameValue
+        CFI R27 SameValue
+        CFI R29 SameValue
+        CFI R30 Undefined
+        CFI R31 Undefined
+        CFI ?RetHighByteMask SameValue
+        CFI EndCommon cfiCommon0
+        
+        
+        CFI Common cfiCommon1 Using cfiNames0
+        CFI CodeAlign 1
+        CFI DataAlign 1
+        CFI ReturnAddress ?Ret CODE
+        CFI CFA_R28 R28+0
+        CFI CFA_SP SP+2
+        CFI ?RetPad 0
+        CFI ?RetHigh and(load(1, DATA, sub(CFA_SP, 1)), ?RetHighByteMask)
+        CFI ?RetLow Frame(CFA_SP, 0)
+        CFI ?Ret Concat
+        CFI R0 SameValue
+        CFI R1 SameValue
+        CFI R2 SameValue
+        CFI R3 SameValue
+        CFI R4 SameValue
+        CFI R5 SameValue
+        CFI R6 SameValue
+        CFI R7 SameValue
+        CFI R8 SameValue
+        CFI R9 SameValue
+        CFI R10 SameValue
+        CFI R11 SameValue
+        CFI R12 SameValue
+        CFI R13 SameValue
+        CFI R14 SameValue
+        CFI R15 SameValue
+        CFI R16 SameValue
+        CFI R17 SameValue
+        CFI R18 SameValue
+        CFI R19 SameValue
+        CFI R20 SameValue
+        CFI R21 SameValue
+        CFI R22 SameValue
+        CFI R23 SameValue
+        CFI R24 SameValue
+        CFI R25 SameValue
+        CFI R26 SameValue
+        CFI R27 SameValue
+        CFI R29 SameValue
+        CFI R30 SameValue
+        CFI R31 SameValue
+        CFI ?RetHighByteMask SameValue
+        CFI EndCommon cfiCommon1
+        
+KeyDrive            SYMBOL "KeyDrive"
+`??KeyDrive??INTVEC 8` SYMBOL "??INTVEC 8", KeyDrive
+Sound               SYMBOL "Sound"
+`??Sound??INTVEC 12` SYMBOL "??INTVEC 12", Sound
+
+// C:\WORK\MetDet\_source\8042C\main.c
+//    1 //программа импульсного металлоискателя 8042 V1 - на основе прошивки 1.0b demo, скачанной с сайта
+//    2 //--no_cross_call  - ОБЯЗАТЕЛЬНО!!!
+//    3 //avrdude -p t2313 -P avrdoper -c stk500v2 -U flash:w:$PROJ_DIR$\Release\Exe\$PROJ_FNAME$.hex:i -U lfuse:w:0xFF:m -U hfuse:w:0xDB:m -U efuse:w:0xFF:m -U lock:w:0x3C:m
+//    4 #include <ioavr.h>
+
+        ASEGN ABSOLUTE:DATA:NOROOT,059H
+// <__C12> volatile __io _A_TIMSK
+_A_TIMSK:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,053H
+// <__C24> volatile __io _A_TCCR0B
+_A_TCCR0B:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,052H
+// <__C26> volatile __io _A_TCNT0
+_A_TCNT0:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,04fH
+// <__C32> volatile __io _A_TCCR1A
+_A_TCCR1A:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,04eH
+// <__C34> volatile __io _A_TCCR1B
+_A_TCCR1B:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,04aH
+// <__C42> volatile __io _A_OCR1A
+_A_OCR1A:
+        DS8 2
+
+        ASEGN ABSOLUTE:DATA:NOROOT,044H
+// <__C52> volatile __io _A_ICR1
+_A_ICR1:
+        DS8 2
+
+        ASEGN ABSOLUTE:DATA:NOROOT,041H
+// <__C59> volatile __io _A_WDTCR
+_A_WDTCR:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,038H
+// <__C75> volatile __io _A_PORTB
+_A_PORTB:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,037H
+// <__C77> volatile __io _A_DDRB
+_A_DDRB:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,032H
+// <__C87> volatile __io _A_PORTD
+_A_PORTD:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,031H
+// <__C89> volatile __io _A_DDRD
+_A_DDRD:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,030H
+// <__C91> volatile __io _A_PIND
+_A_PIND:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,02aH
+// <__C103> volatile __io _A_UCSRB
+_A_UCSRB:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,029H
+// <__C105> volatile __io _A_UBRRL
+_A_UBRRL:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,028H
+// <__C107> volatile __io _A_ACSR
+_A_ACSR:
+        DS8 1
+
+        ASEGN ABSOLUTE:DATA:NOROOT,022H
+// <__C111> volatile __io _A_UBRRH
+_A_UBRRH:
+        DS8 1
+//    5 #include <intrinsics.h>
+//    6 #include <stdio.h>
+//    7 #include <stdlib.h>
+//    8 #include "ina90.h"
+//    9 
+//   10 #include "lcd.h"
+//   11 #include "timeout.h"
+//   12 
+//   13 #include "hardware.h"
+//   14 #include "global_var.h"
+
+        RSEG TINY_Z:DATA:NOROOT(0)
+        REQUIRE `?<Segment init: TINY_Z>`
+// unsigned int __tiny ArrayReceivedSignal[4]
+ArrayReceivedSignal:
+        DS8 8
+// unsigned long __tiny Integrator
+Integrator:
+        DS8 4
+// unsigned long __tiny EchoSumm
+EchoSumm:
+        DS8 4
+// unsigned int volatile __tiny Sensitivity
+Sensitivity:
+        DS8 2
+// unsigned int volatile __tiny ReceivedSignal
+ReceivedSignal:
+        DS8 2
+// unsigned int volatile __tiny TimeTX
+TimeTX:
+        DS8 2
+// unsigned int __tiny BaseValue
+BaseValue:
+        DS8 2
+// unsigned char volatile __tiny TimeGuardAfterTXOFF
+TimeGuardAfterTXOFF:
+        DS8 1
+// unsigned char volatile __tiny TimeGuardAfterRXON
+TimeGuardAfterRXON:
+        DS8 1
+// unsigned char volatile __tiny TimeIntegration
+TimeIntegration:
+        DS8 1
+// unsigned char __tiny IntegratorCycleCount
+IntegratorCycleCount:
+        DS8 1
+// unsigned char volatile __tiny IntegratorCycleEnd
+IntegratorCycleEnd:
+        DS8 1
+// unsigned char __tiny Echo
+Echo:
+        DS8 1
+//   15 
+//   16 #define START_DELAY 500 //милисекунд для установления режимов усилителя по постоянному току
+//   17 
+//   18 //#define ENABLE_LCD // если включено - светодиоды не используются
+//   19 #define ENABLE_SOUND
+//   20 //#define ENABLE_USART
+//   21 #define OLD_AVERAGE_FILTER  // усредняющий и помехоподавляющий фильтр
+//   22 //#define FAST_AVERAGE_FILTER  // экспериментальный фильтр в разработке
+//   23 #define USE_BATTERY_METER  // использовать пин для измерения степени разряженности аккума
+//   24 //#define USE_MANUAL_TIME_TX // задать время накачки вручную - для особых датчиков
+//   25 #define ManualTimeTX 0x75
+//   26 
+//   27 #define BoardV3 // на плате 3 версии находятся ускоряющие конденсаторы и открывающий вспомогательный транзистор в драйвере полевика
+//   28 
+//   29 #ifdef BoardV3
+//   30   #define CAP_BOOST_TIME 0//5
+//   31   #define TIME_GUARD 0x0c
+//   32   #define START_TIME_TX 59 //65
+//   33 #else
+//   34   #define CAP_BOOST_TIME 0
+//   35   #define TIME_GUARD 0x0a
+//   36   #define START_TIME_TX 0x41
+//   37 #endif
+//   38 
+//   39 //#define UTC_DELAY_1 6
+//   40 //#define UTC_DELAY_2 6
+//   41 
+//   42 #define baudrate 38400 //156248 //38400
+//   43 
+//   44 void LowBatIndicationLoop (void);
+//   45 
+
+        RSEG CODE:CODE:NOROOT(1)
+//   46 void __watchdog_init (void)
+__watchdog_init:
+        CFI Block cfiBlock0 Using cfiCommon0
+        CFI Function __watchdog_init
+//   47 {
+//   48 //запускаю сторожевой таймер на 2 секунды
+//   49 __watchdog_reset ();
+        WDR
+//   50 WDTCR |= ((1<<WDCE)|(1<<WDE));
+        IN      R16, 0x21
+        ORI     R16, 0x18
+        OUT     0x21, R16
+//   51 WDTCR = (1<<WDE)|(7<<WDP0);
+        LDI     R16, 15
+        OUT     0x21, R16
+//   52 __watchdog_reset ();
+        WDR
+//   53 }
+        RET
+        CFI EndBlock cfiBlock0
+        REQUIRE _A_WDTCR
+//   54 
+
+        RSEG CODE:CODE:NOROOT(1)
+//   55 void InitTimers (void)
+InitTimers:
+        CFI Block cfiBlock1 Using cfiCommon0
+        CFI Function InitTimers
+//   56 {
+//   57 TCCR1A = 0x00;
+        LDI     R16, 0
+        OUT     0x2F, R16
+//   58 TCCR1B |= ((1<<CS10) | (1<<WGM12));
+        IN      R16, 0x2E
+        ORI     R16, 0x09
+        OUT     0x2E, R16
+//   59 OCR1A = 58500; //50000+6; //0xc350; //0xc350;
+        LDI     R16, 132
+        LDI     R17, 228
+        OUT     0x2B, R17
+        OUT     0x2A, R16
+//   60 
+//   61 TCCR0B |= (4<<CS00);
+        IN      R16, 0x33
+        ORI     R16, 0x04
+        OUT     0x33, R16
+//   62 
+//   63 TIMSK |= ((1<<TOIE0) | (1<<OCIE1A));
+        IN      R16, 0x39
+        ORI     R16, 0x42
+        OUT     0x39, R16
+//   64 
+//   65 ACSR |= (1<<ACIC);		
+        SBI     0x08, 0x02
+//   66 }
+        RET
+        CFI EndBlock cfiBlock1
+        REQUIRE _A_TIMSK
+        REQUIRE _A_TCCR0B
+        REQUIRE _A_TCCR1A
+        REQUIRE _A_TCCR1B
+        REQUIRE _A_OCR1A
+        REQUIRE _A_ACSR
+//   67 
+
+        RSEG CODE:CODE:NOROOT(1)
+//   68 void InitPorts (void)
+InitPorts:
+        CFI Block cfiBlock2 Using cfiCommon0
+        CFI Function InitPorts
+//   69 {
+//   70 /*
+//   71 PortPot |= (1<<Pot);
+//   72 PortPotDir |= (1<<Pot);
+//   73 
+//   74 PortKeys |= ((1<<Q2) | (1<<Q0) | (1<<Q1));
+//   75 PortKeysDir |= ((1<<Q2) | (1<<Q0) | (1<<Q1));
+//   76 
+//   77 PortSpeakerDir |= (1<<Speaker);
+//   78 */
+//   79 #ifndef ENABLE_LCD
+//   80 PortLeds |= ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led5) | (1<<Led6));
+        IN      R16, 0x18
+        ORI     R16, 0xFC
+        OUT     0x18, R16
+//   81 PortLedsDir |= ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led5) | (1<<Led6));
+        IN      R16, 0x17
+        ORI     R16, 0xFC
+        OUT     0x17, R16
+//   82 #endif //ENABLE_LCD
+//   83 
+//   84 /*
+//   85 #ifdef USE_BATTERY_METER  //по идее это просто вход, поэтому можно просто включить подтяжку, на случай неиспользования измерителя
+//   86 PortBatMeter |= (1<<BatMeter); //
+//   87 #endif //USE_BATTERY_METER
+//   88 */
+//   89 
+//   90 PortSys |=    ((1<<Pot) | (1<<Q2) | (1<<Q0) | (1<<Q1) | (1<<BatMeter));
+        IN      R16, 0x12
+        ORI     R16, 0x7C
+        OUT     0x12, R16
+//   91 PortSysDir |= ((1<<Pot) | (1<<Q2) | (1<<Q0) | (1<<Q1) | (1<<Speaker));
+        IN      R16, 0x11
+        ORI     R16, 0x5E
+        OUT     0x11, R16
+//   92 }
+        RET
+        CFI EndBlock cfiBlock2
+        REQUIRE _A_PORTB
+        REQUIRE _A_DDRB
+        REQUIRE _A_PORTD
+        REQUIRE _A_DDRD
+//   93 
+
+        RSEG CODE:CODE:NOROOT(1)
+//   94 void InitUsart (unsigned int baud)
+InitUsart:
+        CFI Block cfiBlock3 Using cfiCommon0
+        CFI Function InitUsart
+//   95 {
+//   96 UBRRH = (unsigned char)(baud>>8);
+        OUT     0x02, R17
+//   97 UBRRL = (unsigned char)baud;
+        OUT     0x09, R16
+//   98 
+//   99 UCSRB |= (1<<TXEN);
+        SBI     0x0A, 0x03
+//  100 }
+        RET
+        CFI EndBlock cfiBlock3
+        REQUIRE _A_UCSRB
+        REQUIRE _A_UBRRL
+        REQUIRE _A_UBRRH
+//  101 
+
+        RSEG CODE:CODE:NOROOT(1)
+//  102 void USARTSendChar (unsigned char data)
+USARTSendChar:
+        CFI Block cfiBlock4 Using cfiCommon0
+        CFI Function USARTSendChar
+//  103 {
+//  104 #ifdef ENABLE_USART
+//  105 while (!( UCSRA & (1<<UDRE))); // ждем, пока отправится предыдущий байт
+//  106 UDR = data;
+//  107 #endif //ENABLE_USART
+//  108 }
+        RET
+        CFI EndBlock cfiBlock4
+//  109 
+
+        RSEG CODE:CODE:NOROOT(1)
+//  110 void InitMode (void)
+InitMode:
+        CFI Block cfiBlock5 Using cfiCommon0
+        CFI Function InitMode
+//  111 {
+//  112 IntegratorCycleEnd = 0x00; // переменная глобальная, поэтому равна 0 после RESET
+        LDI     R30, ArrayReceivedSignal
+        LDI     R16, 0
+        STD     Z+28, R16
+//  113 
+//  114 //устанавливаем начальные временные интервалы
+//  115 
+//  116 TimeTX = START_TIME_TX-CAP_BOOST_TIME;
+        LDI     R16, 59
+        LDI     R17, 0
+        STD     Z+20, R16
+        STD     Z+21, R17
+//  117 TimeGuardAfterTXOFF = 0; // переменная глобальная, поэтому равна 0 после RESET
+        STD     Z+24, R17
+//  118 TimeGuardAfterRXON = 0;// + CAP_BOOST_TIME;// + UTC_DELAY_1; // переменная глобальная, поэтому равна 0 после RESET
+        STD     Z+25, R17
+//  119 
+//  120 TimeIntegration = 0x10;
+        LDI     R16, 16
+        STD     Z+26, R16
+//  121 __enable_interrupt();
+        SEI
+//  122 }
+        RET
+        CFI EndBlock cfiBlock5
+//  123 
+//  124 inline void GetPotPosition (void)
+//  125 {
+//  126 unsigned int counter = 0;
+//  127 __disable_interrupt();
+//  128 PortPotDir &= ~(1<<Pot); //переключаем выход на вход
+//  129 PortPot &= ~(1<<Pot);
+//  130 
+//  131 while (PinPot & (1<<Pot)) { counter += PositionAddStep; } //ждем, пока напряжение упадет до порогового
+//  132 
+//  133 //UDR = (unsigned char)counter;
+//  134 
+//  135 PortPot |= (1<<Pot); //переключаем вход на выход
+//  136 PortPotDir |= (1<<Pot);
+//  137 counter -= PositionSub;
+//  138 
+//  139 if ((counter > PositionMax) || (counter == 0)) counter = 1; // проверяем, не вылезло ли за пределы
+//  140 Sensitivity = counter;
+//  141 
+//  142 //UDR = (unsigned char)Sensitivity;
+//  143 }
+//  144 
+
+        RSEG NEAR_F:CODE:NOROOT(0)
+//  145 __flash signed int segmentsDec[5]={10000,1000,100,10,1};
+segmentsDec:
+        DC16 10000, 1000, 100, 10, 1
+//  146 unsigned char String[5];
+//  147 
+
+        RSEG CODE:CODE:NOROOT(1)
+//  148 void CharToStringDec(signed int inp)
+CharToStringDec:
+        CFI Block cfiBlock6 Using cfiCommon0
+        CFI Function CharToStringDec
+//  149 {
+        LDI     R18, 0
+        LDI     R30, String
+        STD     Z+4, R18
+        STD     Z+3, R18
+        STD     Z+2, R18
+        STD     Z+1, R18
+        ST      Z, R18
+//  150 unsigned char i;
+//  151 String[0]=String[1]=String[2]=String[3]=String[4]=0;
+//  152 // перевод
+//  153 for(i=0;i<5;)
+        RJMP    ??CharToStringDec_0
+//  154   {
+//  155   if((inp-segmentsDec[i])>=0)
+//  156     {
+//  157     inp-=segmentsDec[i];
+??CharToStringDec_1:
+        SUB     R16, R22
+        SBC     R17, R23
+//  158     String[i]++;
+        MOV     R30, R18
+        SUBI    R30, (-(String) & 0xFF)
+        LD      R19, Z
+        INC     R19
+        ST      Z, R19
+//  159     }
+??CharToStringDec_0:
+        MOV     R20, R18
+        LDI     R21, 0
+        LSL     R20
+        ROL     R21
+        MOVW    R31:R30, R21:R20
+        SUBI    R30, LOW((-(segmentsDec) & 0xFFFF))
+        SBCI    R31, (-(segmentsDec) & 0xFFFF) >> 8
+        LPM     R22, Z+
+        LPM     R23, Z
+        MOVW    R21:R20, R17:R16
+        SUB     R20, R22
+        SBC     R21, R23
+        BRPL    ??CharToStringDec_1
+//  160   else i++;
+        INC     R18
+//  161   }
+        CPI     R18, 5
+        BRCS    ??CharToStringDec_0
+//  162 }
+        RET
+        CFI EndBlock cfiBlock6
+//  163 
+
+        RSEG CODE:CODE:NOROOT(1)
+//  164 void LedBarUpdate (unsigned char level)
+LedBarUpdate:
+        CFI Block cfiBlock7 Using cfiCommon0
+        CFI Function LedBarUpdate
+//  165 {
+//  166 if      (level >= threshold5) {  PortLeds = ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led5));   ToneNumber = 5; }
+        CPI     R16, 255
+        BRNE    ??LedBarUpdate_0
+        LDI     R16, 124
+        OUT     0x18, R16
+        LDI     R16, 5
+        RJMP    ??LedBarUpdate_1
+//  167 else if (level >= threshold4) {  PortLeds = ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led6));   ToneNumber = 4; }
+??LedBarUpdate_0:
+        CPI     R16, 201
+        BRCS    ??LedBarUpdate_2
+        LDI     R16, 188
+        OUT     0x18, R16
+        LDI     R16, 4
+??LedBarUpdate_1:
+        LDI     R30, ToneNumber
+        ST      Z, R16
+        RET
+//  168 else if (level >= threshold3) {  PortLeds = ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led5) | (1<<Led6));   ToneNumber = 3; }
+??LedBarUpdate_2:
+        CPI     R16, 81
+        BRCS    ??LedBarUpdate_3
+        LDI     R16, 220
+        OUT     0x18, R16
+        LDI     R16, 3
+        RJMP    ??LedBarUpdate_1
+//  169 else if (level >= threshold2) {  PortLeds = ((1<<Led1) | (1<<Led2) | (1<<Led4) | (1<<Led5) | (1<<Led6));   ToneNumber = 2; }
+??LedBarUpdate_3:
+        CPI     R16, 21
+        BRCS    ??LedBarUpdate_4
+        LDI     R16, 236
+        OUT     0x18, R16
+        LDI     R16, 2
+        RJMP    ??LedBarUpdate_1
+//  170 else if (level >= threshold1) {  PortLeds = ((1<<Led1) | (1<<Led3) | (1<<Led4) | (1<<Led5) | (1<<Led6));   ToneNumber = 1; }
+??LedBarUpdate_4:
+        CPI     R16, 6
+        BRCS    ??LedBarUpdate_5
+        LDI     R16, 244
+        OUT     0x18, R16
+        LDI     R16, 1
+        RJMP    ??LedBarUpdate_1
+//  171 else                          {  PortLeds = ((1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led5) | (1<<Led6));   ToneNumber = 0; }
+??LedBarUpdate_5:
+        LDI     R16, 248
+        OUT     0x18, R16
+        LDI     R16, 0
+        RJMP    ??LedBarUpdate_1
+        CFI EndBlock cfiBlock7
+        REQUIRE _A_PORTB
+//  172 }
+//  173 
+//  174 #ifdef ENABLE_LCD
+//  175 static __flash char str01 [] = " -<>+       "; //+000
+//  176 static __flash char str02 [] = "Low Bat"; //+000
+//  177 static __flash char str03 [] = "Wait"; //+000
+//  178 
+//  179 
+//  180 void LCDBarUpdate (signed int level)
+//  181 {
+//  182 unsigned char col, pos;//, t;
+//  183 signed int t;
+//  184 
+//  185 //if (level < 0) t = 0;
+//  186 if (level < 256) t = (signed int)level;
+//  187 else t = 255;
+//  188 
+//  189 if      (level >= threshold5) { ToneNumber = 5; }
+//  190 else if (level >= threshold4) { ToneNumber = 4; }
+//  191 else if (level >= threshold3) { ToneNumber = 3; }
+//  192 else if (level >= threshold2) { ToneNumber = 2; }
+//  193 else if (level >= threshold1) { ToneNumber = 1; }
+//  194 else                          { ToneNumber = 0; }
+//  195 
+//  196 if (++LCDPrescaler > 2) 
+//  197     {
+//  198     LCDPrescaler = 0;
+//  199 
+//  200     lcd_gotoxy(0,0);//здесь показать уровень
+//  201     lcd_puts_p(str01);
+//  202     
+//  203     /*
+//  204     if (level < 0)  {  lcd_putc('-');  }
+//  205       else    {    lcd_putc(' ');    }
+//  206     */
+//  207     CharToStringDec(level); // конвертация
+//  208     
+//  209     for (unsigned char v=1; v<5; v++) lcd_putc(String[v]+0x30);
+//  210     
+//  211     lcd_gotoxy(0,1);
+//  212     col = (t+48) / 16;//рассчитываем номер знакоместа для рисования палки
+//  213     
+//  214     if (col>0) for (unsigned char z=0; z<col; z++) lcd_putc(0x05);//рисуем несколько полностью закрашенных знакомест
+//  215     
+//  216     //рассчитываем номер символа для отображения в знакоместе //5 вариантов
+//  217     
+//  218     pos = (t+48) - (col*16); // остаток
+//  219     pos = (pos)/3;
+//  220     
+//  221     lcd_putc(pos); //0x00+
+//  222     
+//  223     for (unsigned char t=0; t<16; t++) lcd_putc(' '); //не чистим экран, а заполняем пробелами
+//  224     }
+//  225 }
+//  226 
+//  227 #endif //ENABLE_LCD
+//  228 
+
+        RSEG CODE:CODE:NOROOT(1)
+//  229 void DelayUnits (unsigned long time)
+DelayUnits:
+??DelayUnits_0:
+        CFI Block cfiBlock8 Using cfiCommon0
+        CFI Function DelayUnits
+//  230 {
+//  231 while (time--) {}
+        MOVW    R21:R20, R17:R16
+        MOVW    R23:R22, R19:R18
+        SUBI    R16, 1
+        SBCI    R17, 0
+        SBCI    R18, 0
+        SBCI    R19, 0
+        OR      R20, R21
+        OR      R20, R22
+        OR      R20, R23
+        BRNE    ??DelayUnits_0
+//  232 }
+        RET
+        CFI EndBlock cfiBlock8
+//  233 
+//  234 #pragma vector = TIMER1_COMPA_vect //вызывается раз в 5мс
+
+        RSEG CODE:CODE:NOROOT(1)
+//  235 __interrupt void KeyDrive (void)
+KeyDrive:
+        CFI Block cfiBlock9 Using cfiCommon1
+        CFI Function KeyDrive
+//  236 {
+        FUNCALL KeyDrive, DelayUnits
+        LOCFRAME CSTACK, 18, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL KeyDrive, DelayUnits
+        LOCFRAME CSTACK, 18, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL KeyDrive, DelayUnits
+        LOCFRAME CSTACK, 18, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL KeyDrive, DelayUnits
+        LOCFRAME CSTACK, 18, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL KeyDrive, DelayUnits
+        LOCFRAME CSTACK, 18, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL KeyDrive, GetPotPosition
+        LOCFRAME CSTACK, 18, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        ST      -Y, R26
+        CFI R26 Frame(CFA_R28, -1)
+        CFI CFA_R28 R28+1
+        ST      -Y, R25
+        CFI R25 Frame(CFA_R28, -2)
+        CFI CFA_R28 R28+2
+        ST      -Y, R24
+        CFI R24 Frame(CFA_R28, -3)
+        CFI CFA_R28 R28+3
+        ST      -Y, R31
+        CFI R31 Frame(CFA_R28, -4)
+        CFI CFA_R28 R28+4
+        ST      -Y, R30
+        CFI R30 Frame(CFA_R28, -5)
+        CFI CFA_R28 R28+5
+        ST      -Y, R3
+        CFI R3 Frame(CFA_R28, -6)
+        CFI CFA_R28 R28+6
+        ST      -Y, R2
+        CFI R2 Frame(CFA_R28, -7)
+        CFI CFA_R28 R28+7
+        ST      -Y, R1
+        CFI R1 Frame(CFA_R28, -8)
+        CFI CFA_R28 R28+8
+        ST      -Y, R0
+        CFI R0 Frame(CFA_R28, -9)
+        CFI CFA_R28 R28+9
+        ST      -Y, R23
+        CFI R23 Frame(CFA_R28, -10)
+        CFI CFA_R28 R28+10
+        ST      -Y, R22
+        CFI R22 Frame(CFA_R28, -11)
+        CFI CFA_R28 R28+11
+        ST      -Y, R21
+        CFI R21 Frame(CFA_R28, -12)
+        CFI CFA_R28 R28+12
+        ST      -Y, R20
+        CFI R20 Frame(CFA_R28, -13)
+        CFI CFA_R28 R28+13
+        ST      -Y, R19
+        CFI R19 Frame(CFA_R28, -14)
+        CFI CFA_R28 R28+14
+        ST      -Y, R18
+        CFI R18 Frame(CFA_R28, -15)
+        CFI CFA_R28 R28+15
+        ST      -Y, R17
+        CFI R17 Frame(CFA_R28, -16)
+        CFI CFA_R28 R28+16
+        ST      -Y, R16
+        CFI R16 Frame(CFA_R28, -17)
+        CFI CFA_R28 R28+17
+        IN      R26, 0x3F
+//  237 //unsigned char temp = 10;
+//  238 unsigned int ICRData = ICR1; //получаем данные о времени срабатывания компаратора
+        IN      R24, 0x24
+        IN      R25, 0x25
+//  239 PortKeys &= ~(1<<Q1); //выключаем первый усилитель
+        CBI     0x12, 0x04
+//  240 DelayUnits (10);
+        LDI     R16, 10
+        LDI     R17, 0
+        LDI     R18, 0
+        LDI     R19, 0
+        RCALL   DelayUnits
+//  241 PortKeys &= ~(1<<Q0); //включаем накачку катушки
+        CBI     0x12, 0x03
+//  242 DelayUnits (TimeTX);
+        LDI     R30, ArrayReceivedSignal
+        LDD     R16, Z+20
+        LDD     R17, Z+21
+        LDI     R18, 0
+        LDI     R19, 0
+        RCALL   DelayUnits
+//  243 PortKeys |= (1<<Q0); //выключаем накачку катушки
+        SBI     0x12, 0x03
+//  244 DelayUnits (TimeGuardAfterTXOFF);
+        LDI     R30, ArrayReceivedSignal
+        LDD     R16, Z+24
+        LDI     R17, 0
+        LDI     R18, 0
+        LDI     R19, 0
+        RCALL   DelayUnits
+//  245 PortKeys |= (1<<Q1); //включаем первый усилитель
+        SBI     0x12, 0x04
+//  246 DelayUnits (TimeGuardAfterRXON);
+        LDI     R30, ArrayReceivedSignal
+        LDD     R16, Z+25
+        LDI     R17, 0
+        LDI     R18, 0
+        LDI     R19, 0
+        RCALL   DelayUnits
+//  247 PortKeys &= ~(1<<Q2); //включаем интегратор
+        CBI     0x12, 0x02
+//  248 DelayUnits (TimeIntegration);
+        LDI     R30, ArrayReceivedSignal
+        LDD     R16, Z+26
+        LDI     R17, 0
+        LDI     R18, 0
+        LDI     R19, 0
+        RCALL   DelayUnits
+//  249 PortKeys |= (1<<Q2); //выключаем интегратор
+        SBI     0x12, 0x02
+//  250 
+//  251 IntegratorCycleCount++;
+        LDI     R30, ArrayReceivedSignal
+        LDD     R16, Z+27
+        INC     R16
+        STD     Z+27, R16
+//  252 Integrator += ICRData;
+        LDI     R18, 0
+        LDD     R20, Z+8
+        LDD     R21, Z+9
+        LDD     R22, Z+10
+        LDD     R23, Z+11
+        ADD     R20, R24
+        ADC     R21, R25
+        ADC     R22, R18
+        ADC     R23, R18
+        STD     Z+8, R20
+        STD     Z+9, R21
+        STD     Z+10, R22
+        STD     Z+11, R23
+//  253 
+//  254 //__enable_interrupt(); //вероятно таки придется разрешить здесь прерывания
+//  255 
+//  256 if (IntegratorCycleCount > 7)
+        CPI     R16, 8
+        BRCS    ??KeyDrive_0
+//  257   {
+//  258   IntegratorCycleCount = 0;
+        STD     Z+27, R18
+//  259   Integrator = (Integrator >> 3); // деление на 8
+//  260   ReceivedSignal = (unsigned int)Integrator;
+        MOVW    R17:R16, R21:R20
+        MOVW    R19:R18, R23:R22
+        LDI     R20, 3
+        RCALL   ?UL_SHR_L03
+        STD     Z+18, R16
+        STD     Z+19, R17
+//  261   //UDR = ReceivedSignal>>8;
+//  262   IntegratorCycleEnd = 0xFF;
+        STD     Z+28, R20
+//  263   Integrator = 0;
+        LDI     R16, 0
+        STD     Z+8, R16
+        STD     Z+9, R16
+        STD     Z+10, R16
+        STD     Z+11, R16
+//  264   }
+//  265 
+//  266 GetPotPosition ();
+??KeyDrive_0:
+        RCALL   GetPotPosition
+//  267 __watchdog_reset ();
+        WDR
+//  268 }
+        OUT     0x3F, R26
+        LD      R16, Y+
+        CFI R16 SameValue
+        CFI CFA_R28 R28+16
+        LD      R17, Y+
+        CFI R17 SameValue
+        CFI CFA_R28 R28+15
+        LD      R18, Y+
+        CFI R18 SameValue
+        CFI CFA_R28 R28+14
+        LD      R19, Y+
+        CFI R19 SameValue
+        CFI CFA_R28 R28+13
+        LD      R20, Y+
+        CFI R20 SameValue
+        CFI CFA_R28 R28+12
+        LD      R21, Y+
+        CFI R21 SameValue
+        CFI CFA_R28 R28+11
+        LD      R22, Y+
+        CFI R22 SameValue
+        CFI CFA_R28 R28+10
+        LD      R23, Y+
+        CFI R23 SameValue
+        CFI CFA_R28 R28+9
+        LD      R0, Y+
+        CFI R0 SameValue
+        CFI CFA_R28 R28+8
+        LD      R1, Y+
+        CFI R1 SameValue
+        CFI CFA_R28 R28+7
+        LD      R2, Y+
+        CFI R2 SameValue
+        CFI CFA_R28 R28+6
+        LD      R3, Y+
+        CFI R3 SameValue
+        CFI CFA_R28 R28+5
+        LD      R30, Y+
+        CFI R30 SameValue
+        CFI CFA_R28 R28+4
+        LD      R31, Y+
+        CFI R31 SameValue
+        CFI CFA_R28 R28+3
+        LD      R24, Y+
+        CFI R24 SameValue
+        CFI CFA_R28 R28+2
+        LD      R25, Y+
+        CFI R25 SameValue
+        CFI CFA_R28 R28+1
+        LD      R26, Y+
+        CFI R26 SameValue
+        CFI CFA_R28 R28+0
+        RETI
+        CFI EndBlock cfiBlock9
+        REQUIRE _A_ICR1
+        REQUIRE _A_PORTD
+
+        RSEG TINY_Z:DATA:NOROOT(0)
+        REQUIRE `?<Segment init: TINY_Z>`
+// unsigned char volatile __tiny ToneNumber
+ToneNumber:
+        DS8 1
+//  269 
+//  270 unsigned char SoundCycleCount;
+SoundCycleCount:
+        DS8 1
+
+        RSEG TINY_Z:DATA:NOROOT(0)
+        REQUIRE `?<Segment init: TINY_Z>`
+// unsigned char __tiny LCDPrescaler
+LCDPrescaler:
+        DS8 1
+
+        RSEG TINY_Z:DATA:NOROOT(0)
+        REQUIRE `?<Segment init: TINY_Z>`
+String:
+        DS8 5
+//  271 
+//  272 #pragma vector = TIMER0_OVF0_vect 
+
+        RSEG CODE:CODE:NOROOT(1)
+//  273 __interrupt void Sound (void)
+Sound:
+        CFI Block cfiBlock10 Using cfiCommon1
+        CFI Function Sound
+//  274 {
+        ST      -Y, R30
+        CFI R30 Frame(CFA_R28, -1)
+        CFI CFA_R28 R28+1
+        ST      -Y, R18
+        CFI R18 Frame(CFA_R28, -2)
+        CFI CFA_R28 R28+2
+        ST      -Y, R17
+        CFI R17 Frame(CFA_R28, -3)
+        CFI CFA_R28 R28+3
+        ST      -Y, R16
+        CFI R16 Frame(CFA_R28, -4)
+        CFI CFA_R28 R28+4
+        IN      R18, 0x3F
+//  275 TCNT0 = 0xFE; // перезагрузить таймер
+        LDI     R16, 254
+        OUT     0x32, R16
+//  276 if ((ToneNumber != 0) && (SoundCycleCount == 0))
+        LDI     R30, ToneNumber
+        LD      R16, Z
+        TST     R16
+        BREQ    ??Sound_0
+        LDD     R16, Z+1
+        TST     R16
+        BRNE    ??Sound_0
+//  277   {
+//  278   SoundCycleCount = 16 - ToneNumber;
+        LDI     R16, 16
+        LD      R17, Z
+        SUB     R16, R17
+        STD     Z+1, R16
+//  279 #ifdef ENABLE_SOUND      
+//  280   if (PortSpeaker & (1<<Speaker)) PortSpeaker &= ~(1<<Speaker); // speaker toggle
+        SBIS    0x12, 0x01
+        RJMP    ??Sound_1
+        CBI     0x12, 0x01
+        RJMP    ??Sound_0
+//  281     else PortSpeaker |= (1<<Speaker);
+??Sound_1:
+        SBI     0x12, 0x01
+//  282 #endif //ENABLE_SOUND       
+//  283   }
+//  284 if (SoundCycleCount) SoundCycleCount--;
+??Sound_0:
+        LDD     R16, Z+1
+        TST     R16
+        BREQ    ??Sound_2
+        DEC     R16
+        STD     Z+1, R16
+//  285 
+//  286 #ifdef ENABLE_SOUND 
+//  287 if (ToneNumber == 0) PortSpeaker &= ~(1<<Speaker); // не потребляем динамиком лишний ток
+??Sound_2:
+        LD      R16, Z
+        TST     R16
+        BRNE    ??Sound_3
+        CBI     0x12, 0x01
+//  288 #endif //ENABLE_SOUND 
+//  289 }
+??Sound_3:
+        OUT     0x3F, R18
+        LD      R16, Y+
+        CFI R16 SameValue
+        CFI CFA_R28 R28+3
+        LD      R17, Y+
+        CFI R17 SameValue
+        CFI CFA_R28 R28+2
+        LD      R18, Y+
+        CFI R18 SameValue
+        CFI CFA_R28 R28+1
+        LD      R30, Y+
+        CFI R30 SameValue
+        CFI CFA_R28 R28+0
+        RETI
+        CFI EndBlock cfiBlock10
+        REQUIRE _A_TCNT0
+        REQUIRE _A_PORTD
+//  290 
+
+        RSEG CODE:CODE:NOROOT(1)
+//  291 void LowBatIndicationLoop (void) // отсюда никогда не выходим
+LowBatIndicationLoop:
+        CFI Block cfiBlock11 Using cfiCommon0
+        CFI Function LowBatIndicationLoop
+//  292 {
+//  293 #ifndef ENABLE_LCD      //светодиодный столбец
+//  294 PortLeds = ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led5) | (1<<Led6)); //тушим все диоды
+        LDI     R16, 252
+        OUT     0x18, R16
+//  295 #endif //ENABLE_LCD
+//  296 
+//  297 //TimeTX = 0; //Полная накачка уже ни к чему
+//  298 PortSysDir &= ~(1<<Q0); //Выключаем ключ совсем - Полная накачка уже ни к чему
+        CBI     0x11, 0x03
+        RJMP    ??LowBatIndicationLoop_0
+//  299 #ifdef ENABLE_LCD //экран
+//  300 lcd_clrscr();
+//  301 lcd_gotoxy(4,0);
+//  302 lcd_puts_p(str02);
+//  303 #endif //ENABLE_LCD 
+//  304 
+//  305 while (1)// батарея разряжена
+//  306     {
+//  307     __delay_cycles((CtrlClockRate/1000)*500);
+//  308     if (ToneNumber == 1) ToneNumber =0;
+//  309       else ToneNumber = 1;
+//  310       
+//  311     #ifndef ENABLE_LCD      //светодиодный столбец
+//  312     if (PortLeds & (1<<Led1)) PortLeds &= ~(1<<Led1); // мигаем зеленым диодом с интервалом 0,5с
+??LowBatIndicationLoop_1:
+        CBI     0x18, 0x02
+??LowBatIndicationLoop_0:
+        LDI     R16, 63
+        LDI     R17, 66
+        LDI     R18, 15
+        SUBI    R16, 1
+        SBCI    R17, 0
+        SBCI    R18, 0
+        BRNE    $-6
+        RJMP    $+2
+        NOP
+        LDI     R30, ToneNumber
+        LD      R16, Z
+        CPI     R16, 1
+        BRNE    ??LowBatIndicationLoop_2
+        LDI     R16, 0
+        RJMP    ??LowBatIndicationLoop_3
+??LowBatIndicationLoop_2:
+        LDI     R16, 1
+??LowBatIndicationLoop_3:
+        ST      Z, R16
+        SBIC    0x18, 0x02
+        RJMP    ??LowBatIndicationLoop_1
+//  313       else PortLeds |= (1<<Led1);
+        SBI     0x18, 0x02
+        RJMP    ??LowBatIndicationLoop_0
+        CFI EndBlock cfiBlock11
+        REQUIRE _A_PORTB
+        REQUIRE _A_DDRD
+//  314     #endif //ENABLE_LCD
+//  315     }
+//  316 }
+//  317 
+//  318 
+
+        RSEG CODE:CODE:NOROOT(1)
+//  319 int main (void)
+main:
+        CFI Block cfiBlock12 Using cfiCommon0
+        CFI Function main
+//  320 {
+        FUNCALL main, InitPorts
+        LOCFRAME CSTACK, 10, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL main, InitTimers
+        LOCFRAME CSTACK, 10, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL main, InitMode
+        LOCFRAME CSTACK, 10, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL main, __watchdog_init
+        LOCFRAME CSTACK, 10, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL main, LedBarUpdate
+        LOCFRAME CSTACK, 10, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL main, LowBatIndicationLoop
+        LOCFRAME CSTACK, 10, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        FUNCALL main, LowBatIndicationLoop
+        LOCFRAME CSTACK, 10, STACK
+        LOCFRAME RSTACK, 2, STACK
+        ARGFRAME RSTACK, 0, STACK
+        RCALL   ?PROLOGUE10_L09
+        CFI R9 Frame(CFA_R28, -1)
+        CFI R8 Frame(CFA_R28, -2)
+        CFI R7 Frame(CFA_R28, -3)
+        CFI R6 Frame(CFA_R28, -4)
+        CFI R5 Frame(CFA_R28, -5)
+        CFI R4 Frame(CFA_R28, -6)
+        CFI R27 Frame(CFA_R28, -7)
+        CFI R26 Frame(CFA_R28, -8)
+        CFI R25 Frame(CFA_R28, -9)
+        CFI R24 Frame(CFA_R28, -10)
+        CFI CFA_R28 R28+10
+        REQUIRE ?Register_R4_is_cg_reg
+        REQUIRE ?Register_R5_is_cg_reg
+        REQUIRE ?Register_R6_is_cg_reg
+        REQUIRE ?Register_R7_is_cg_reg
+        REQUIRE ?Register_R8_is_cg_reg
+        REQUIRE ?Register_R9_is_cg_reg
+//  321 signed int Ka=0, Kb=0, Kc=0, Kd=0, temp;//, tempdebug;
+        CLR     R8
+        CLR     R9
+        CLR     R4
+        CLR     R5
+        CLR     R6
+        CLR     R7
+        LDI     R24, 0
+//  322 
+//  323 InitPorts ();
+        RCALL   InitPorts
+//  324 
+//  325 #ifdef ENABLE_LCD
+//  326 lcd_init(LCD_DISP_ON);
+//  327 
+//  328 //lcd_clrscr();
+//  329 lcd_gotoxy(6,0);
+//  330 lcd_puts_p(str03);
+//  331 #endif //ENABLE_LCD
+//  332 
+//  333 #ifdef ENABLE_USART
+//  334 InitUsart (((CtrlClockRate/16)/baudrate)-1);
+//  335 #endif //ENABLE_USART
+//  336 InitTimers ();
+        RCALL   InitTimers
+//  337 InitMode ();
+        RCALL   InitMode
+//  338 __delay_cycles((CtrlClockRate/1000)*START_DELAY); // стартовая задержка
+        LDI     R16, 63
+        LDI     R17, 66
+        LDI     R18, 15
+        SUBI    R16, 1
+        SBCI    R17, 0
+        SBCI    R18, 0
+        BRNE    $-6
+        RJMP    $+2
+        NOP
+//  339 __watchdog_init ();
+        RCALL   __watchdog_init
+//  340 
+//  341 //    unsigned int tem;
+//  342 
+//  343 for (unsigned char i=0; i<8; i++)
+        LDI     R31, 8
+        LDI     R30, ArrayReceivedSignal
+//  344   {
+//  345   while (IntegratorCycleEnd == 0) {} // ждем пока пройдет интегрирование
+??main_0:
+        LDD     R16, Z+28
+        TST     R16
+        BREQ    ??main_0
+//  346   EchoSumm = EchoSumm + ReceivedSignal;
+        LDD     R16, Z+18
+        LDD     R17, Z+19
+        LDD     R20, Z+12
+        LDD     R21, Z+13
+        LDD     R22, Z+14
+        LDD     R23, Z+15
+        ADD     R20, R16
+        ADC     R21, R17
+        ADC     R22, R8
+        ADC     R23, R8
+        STD     Z+12, R20
+        STD     Z+13, R21
+        STD     Z+14, R22
+        STD     Z+15, R23
+//  347   
+//  348 
+//  349 //   tem = ReceivedSignal >> 8;  
+//  350 //  USARTSendChar ((unsigned char)tem);
+//  351 //  USARTSendChar ((unsigned char)ReceivedSignal); 
+//  352   
+//  353   IntegratorCycleEnd = 0;
+        STD     Z+28, R8
+//  354   }
+        DEC     R31
+        BRNE    ??main_0
+//  355 
+//  356 //USARTSendChar ((unsigned char)EchoSumm);
+//  357 
+//  358 
+//  359 EchoSumm = EchoSumm >> 8; // деление на 256
+        MOV     R16, R21
+        STD     Z+12, R21
+        STD     Z+13, R22
+        STD     Z+14, R23
+        STD     Z+15, R8
+//  360 Echo = (unsigned char)(EchoSumm);
+//  361 
+//  362 //USARTSendChar (Echo);
+//  363 
+//  364 Echo -= 0x32;
+        SUBI    R16, 50
+        STD     Z+29, R16
+//  365 
+//  366 //USARTSendChar (Echo);   // эхо, полученное при калибровке
+//  367 
+//  368 if (Echo >= 0x19) // катушка в порядке, эхо достаточной величины
+        CPI     R16, 25
+        BRCC    $+2+2
+        RJMP    ??main_1
+//  369   {
+//  370   if      (Echo <= 0x37) {Ka = 0x19; Kb = 0x37; Kc = 0xA0; Kd = 0x8C; }
+        CPI     R16, 56
+        BRCC    ??main_2
+        LDI     R16, 25
+        MOV     R8, R16
+        LDI     R16, 55
+        MOV     R4, R16
+        LDI     R16, 160
+        MOV     R6, R16
+        LDI     R24, 140
+        RJMP    ??main_3
+//  371   else if (Echo <= 0x4B) {Ka = 0x37; Kb = 0x4B; Kc = 0x8C; Kd = 0x67; }
+??main_2:
+        CPI     R16, 76
+        BRCC    ??main_4
+        LDI     R16, 55
+        MOV     R8, R16
+        LDI     R16, 75
+        MOV     R4, R16
+        LDI     R16, 140
+        MOV     R6, R16
+        LDI     R24, 103
+        RJMP    ??main_3
+//  372   else if (Echo <= 0x52) {Ka = 0x4B; Kb = 0x52; Kc = 0x67; Kd = 0x52; }
+??main_4:
+        CPI     R16, 83
+        BRCC    ??main_5
+        LDI     R16, 75
+        MOV     R8, R16
+        LDI     R16, 82
+        MOV     R4, R16
+        LDI     R16, 103
+        MOV     R6, R16
+        LDI     R24, 82
+        RJMP    ??main_3
+//  373   else if (Echo <= 0x5F) {Ka = 0x52; Kb = 0x5F; Kc = 0x52; Kd = 0x41; }
+??main_5:
+        CPI     R16, 96
+        BRCC    ??main_3
+        LDI     R16, 82
+        MOV     R8, R16
+        LDI     R16, 95
+        MOV     R4, R16
+        MOV     R6, R8
+        LDI     R24, 65
+//  374   
+//  375   temp = Echo - Ka;
+//  376   temp = temp * (Kd - Kc);
+//  377   temp = Kc + (temp / (Kb - Ka));
+//  378 
+//  379 #ifndef USE_MANUAL_TIME_TX
+//  380   TimeTX = temp - CAP_BOOST_TIME;  //устанавливаем рабочие тайминги
+??main_3:
+        LDD     R16, Z+29
+        LDI     R17, 0
+        SUB     R16, R8
+        SBCI    R17, 0
+        MOV     R20, R24
+        LDI     R21, 0
+        SUB     R20, R6
+        SBCI    R21, 0
+        RCALL   ?S_MUL_L02
+        SUB     R4, R8
+        SBC     R5, R9
+        MOVW    R21:R20, R5:R4
+        RCALL   ?SS_DIVMOD_L02
+        ADD     R6, R16
+        ADC     R7, R17
+        LDI     R30, ArrayReceivedSignal
+        STD     Z+20, R6
+        STD     Z+21, R7
+//  381   if (Echo >= 0x60) TimeTX = 0x41 - CAP_BOOST_TIME;
+        LDD     R16, Z+29
+        CPI     R16, 96
+        BRCS    ??main_6
+        LDI     R16, 65
+        STD     Z+20, R16
+        STD     Z+21, R9
+//  382 #endif
+//  383   
+//  384 #ifdef USE_MANUAL_TIME_TX 
+//  385   TimeTX = ManualTimeTX;
+//  386 #endif //USE_MANUAL_TIME_TX 
+//  387 
+//  388   TimeGuardAfterTXOFF = TIME_GUARD; 
+??main_6:
+        LDI     R16, 12
+        STD     Z+24, R16
+//  389   TimeGuardAfterRXON = 0x00;// + CAP_BOOST_TIME;// + UTC_DELAY_1 + UTC_DELAY_2;
+        STD     Z+25, R9
+//  390   TimeIntegration = 0x32;
+        LDI     R16, 50
+        STD     Z+26, R16
+//  391   
+//  392   USARTSendChar (TimeTX);  // вычисленное время накачки
+        LDD     R16, Z+20
+        LDD     R17, Z+21
+//  393 /*
+//  394   for (unsigned char i=0; i<10; i++) // пропускаем 10 циклов для устаканивания
+//  395     {
+//  396    while (IntegratorCycleEnd == 0) {} // пропускаем 1 цикл
+//  397    IntegratorCycleEnd = 0;
+//  398     }  
+//  399 */
+//  400 
+//  401 while (IntegratorCycleEnd == 0) {} // пропускаем 1 цикл, этого достаточно
+??main_7:
+        LDD     R16, Z+28
+        TST     R16
+        BREQ    ??main_7
+//  402 IntegratorCycleEnd = 0;  
+        STD     Z+28, R9
+//  403   
+//  404   
+//  405 //unsigned int tem;  
+//  406   
+//  407 
+//  408   EchoSumm = 0;
+        STD     Z+12, R9
+        STD     Z+13, R9
+        STD     Z+14, R9
+        STD     Z+15, R9
+//  409   for (unsigned char i=0; i<32; i++)
+        LDI     R20, 32
+//  410     {
+//  411     while (IntegratorCycleEnd == 0) {} // ждем пока пройдет интегрирование
+??main_8:
+        LDD     R16, Z+28
+        TST     R16
+        BREQ    ??main_8
+//  412 /*    
+//  413       tem = ReceivedSignal >> 8;
+//  414   
+//  415   USARTSendChar ((unsigned char)tem);  
+//  416   USARTSendChar ((unsigned char)ReceivedSignal);
+//  417 */  
+//  418     
+//  419     EchoSumm += ReceivedSignal;
+        LDD     R16, Z+18
+        LDD     R17, Z+19
+        LDD     R0, Z+12
+        LDD     R1, Z+13
+        LDD     R2, Z+14
+        LDD     R3, Z+15
+        ADD     R0, R16
+        ADC     R1, R17
+        ADC     R2, R9
+        ADC     R3, R9
+        STD     Z+12, R0
+        STD     Z+13, R1
+        STD     Z+14, R2
+        STD     Z+15, R3
+//  420     IntegratorCycleEnd = 0;
+        STD     Z+28, R9
+//  421     }
+        DEC     R20
+        BRNE    ??main_8
+//  422   EchoSumm = EchoSumm >> 5; // деление на 32
+//  423   BaseValue = (unsigned int)EchoSumm; // получили базовое значение при отсутствии металла
+        MOVW    R17:R16, R1:R0
+        MOVW    R19:R18, R3:R2
+        LDI     R20, 5
+        RCALL   ?UL_SHR_L03
+        STD     Z+22, R16
+        STD     Z+23, R17
+        RJMP    ??main_9
+//  424   
+//  425 /*
+//  426   tem = BaseValue >> 8;
+//  427   
+//  428   USARTSendChar ((unsigned char)tem);  
+//  429   USARTSendChar ((unsigned char)BaseValue);
+//  430 */
+//  431   
+//  432   //USARTSendChar (BaseValue>>8); //базовое значение
+//  433   
+//  434   while (1) // основной цикл обнаружения металла
+//  435     {
+//  436     while (IntegratorCycleEnd == 0) {} // ждем пока пройдет интегрирование
+//  437     IntegratorCycleEnd = 0;
+//  438     
+//  439 #ifdef OLD_AVERAGE_FILTER   //усреднитель сигнала
+//  440     EchoSumm = 0;
+//  441     for (unsigned char z=0; z<(ArrayLength-1); z++)  { ArrayReceivedSignal [z] = ArrayReceivedSignal [z+1];  } // сдвинули массив к 0 ячейке
+//  442     ArrayReceivedSignal [ArrayLength-1] = ReceivedSignal; // в последнюю ячейку вносим свежее значение
+//  443     
+//  444     for (unsigned char z=0; z<ArrayLength; z++) EchoSumm += ArrayReceivedSignal [z]; // суммируем последние показания
+//  445     ReceivedSignal = (unsigned int)(EchoSumm / ArrayLength);
+//  446 #endif //OLD_AVERAGE_FILTER
+//  447 
+//  448 #ifdef FAST_AVERAGE_FILTER   //усреднитель сигнала (быстрый)
+//  449 
+//  450 #endif //OLD_AVERAGE_FILTER    
+//  451     
+//  452 #ifdef USE_BATTERY_METER  //измерение напряжения аккума
+//  453     PortBatMeterDir |= (1<<BatMeter); // назначаем как выход, для преодоления гистерезиса
+//  454     __delay_cycles((CtrlClockRate/1000000)*2); // чтобы устаканилось
+//  455     PortBatMeterDir &= ~(1<<BatMeter); // назначаем как вход
+//  456     __delay_cycles((CtrlClockRate/1000000)*2); // чтобы устаканилось
+//  457     
+//  458     if (!(PinBatMeter & (1<<BatMeter))) LowBatIndicationLoop (); // и меряем на порту 2,10 В
+//  459 #endif //USE_BATTERY_METER
+//  460     
+//  461     //UDR = ReceivedSignal;
+//  462     
+//  463       //tem = ReceivedSignal >> 8;
+//  464   
+//  465   //USARTSendChar ((unsigned char)ReceivedSignal);
+//  466   //USARTSendChar ((unsigned char)tem);
+//  467     
+//  468     temp = ReceivedSignal - BaseValue; // сравнение с опорным значением
+//  469     
+//  470     /*
+//  471     tempdebug = temp + 127;
+//  472     if (tempdebug > 255) tempdebug = 255;
+//  473     if (tempdebug < 0) tempdebug = 0;
+//  474     UDR = tempdebug;
+//  475     */
+//  476     
+//  477     temp += temp; // разницу удваиваем со знаком
+//  478     //temp += temp; // разницу удваиваем со знаком
+//  479     //temp = 250;
+//  480     temp = temp / ((signed int)Sensitivity);
+//  481     //USARTSendChar ((unsigned char)Sensitivity);
+//  482     
+//  483     #ifndef ENABLE_LCD      //светодиодный столбец
+//  484     if (temp < 0) temp = 0; // следим за рамками
+//  485     if (temp > 254) temp = 255;
+??main_10:
+        CPI     R16, 255
+        SBCI    R17, 0
+        BRLT    ??main_11
+        LDI     R16, 255
+//  486     USARTSendChar ((unsigned char)temp); // результат
+//  487     LedBarUpdate ((unsigned char)temp);
+??main_11:
+        RCALL   LedBarUpdate
+??main_9:
+        LDI     R30, ArrayReceivedSignal
+        LDD     R16, Z+28
+        TST     R16
+        BREQ    ??main_9
+        LDI     R16, 0
+        STD     Z+28, R9
+        STD     Z+12, R9
+        STD     Z+13, R9
+        STD     Z+14, R9
+        STD     Z+15, R9
+??main_12:
+        MOV     R17, R16
+        LSL     R17
+        LDI     R30, ArrayReceivedSignal
+        ADD     R30, R17
+        LDD     R18, Z+2
+        LDD     R19, Z+3
+        ST      Z, R18
+        STD     Z+1, R19
+        INC     R16
+        CPI     R16, 3
+        BRCS    ??main_12
+        LDI     R30, ArrayReceivedSignal
+        LDD     R16, Z+18
+        LDD     R17, Z+19
+        STD     Z+6, R16
+        STD     Z+7, R17
+        LDI     R20, 0
+??main_13:
+        MOV     R16, R20
+        LSL     R16
+        ADD     R30, R16
+        LD      R16, Z
+        LDD     R17, Z+1
+        LDI     R30, ArrayReceivedSignal
+        LDD     R0, Z+12
+        LDD     R1, Z+13
+        LDD     R2, Z+14
+        LDD     R3, Z+15
+        ADD     R0, R16
+        ADC     R1, R17
+        ADC     R2, R9
+        ADC     R3, R9
+        STD     Z+12, R0
+        STD     Z+13, R1
+        STD     Z+14, R2
+        STD     Z+15, R3
+        INC     R20
+        CPI     R20, 4
+        BRCS    ??main_13
+        MOVW    R17:R16, R1:R0
+        MOVW    R19:R18, R3:R2
+        LDI     R20, 2
+        RCALL   ?UL_SHR_L03
+        STD     Z+18, R16
+        STD     Z+19, R17
+        SBI     0x11, 0x05
+        LDI     R16, 6
+        DEC     R16
+        BRNE    $-2
+        RJMP    $+2
+        CBI     0x11, 0x05
+        LDI     R16, 6
+        DEC     R16
+        BRNE    $-2
+        RJMP    $+2
+        SBIS    0x10, 0x05
+        RCALL   LowBatIndicationLoop
+??main_14:
+        LDI     R30, ArrayReceivedSignal
+        LDD     R16, Z+18
+        LDD     R17, Z+19
+        LDD     R18, Z+22
+        LDD     R19, Z+23
+        SUB     R16, R18
+        SBC     R17, R19
+        LSL     R16
+        ROL     R17
+        LDD     R20, Z+16
+        LDD     R21, Z+17
+        RCALL   ?SS_DIVMOD_L02
+        TST     R17
+        BRMI    $+2+2
+        RJMP    ??main_10
+        LDI     R16, 0
+        RJMP    ??main_11
+//  488     #endif //ENABLE_LCD
+//  489     
+//  490     #ifdef ENABLE_LCD // тут своя процедура вывода полосы
+//  491     if (temp < -48) temp = -48; // следим за рамками
+//  492     //if (temp > 9998) temp = 9999;
+//  493     
+//  494     
+//  495     //if (++LCDPrescaler > 2) 
+//  496     //{
+//  497     //LCDPrescaler = 0;
+//  498     LCDBarUpdate (temp);
+//  499     //}
+//  500     #endif //ENABLE_LCD
+//  501     }
+//  502   }
+//  503   else LowBatIndicationLoop ();
+??main_1:
+        RCALL   LowBatIndicationLoop
+//  504 }
+        LDI     R16, 0
+        LDI     R17, 0
+        LDI     R30, 10
+        RJMP    ?EPILOGUE_B10_L09
+        CFI EndBlock cfiBlock12
+        REQUIRE _A_DDRD
+        REQUIRE _A_PIND
+
+        RSEG CODE:CODE:NOROOT(1)
+GetPotPosition:
+        CFI Block cfiBlock13 Using cfiCommon0
+        CFI Function GetPotPosition
+        RCALL   ?PROLOGUE2_L09
+        CFI R25 Frame(CFA_R28, -1)
+        CFI R24 Frame(CFA_R28, -2)
+        CFI CFA_R28 R28+2
+        LDI     R24, 0
+        LDI     R25, 0
+        CLI
+        CBI     0x11, 0x06
+        CBI     0x12, 0x06
+        RJMP    ??GetPotPosition_0
+??GetPotPosition_1:
+        ADIW    R25:R24, 1
+??GetPotPosition_0:
+        SBIC    0x10, 0x06
+        RJMP    ??GetPotPosition_1
+        SBI     0x12, 0x06
+        SBI     0x11, 0x06
+        SBIW    R25:R24, 7
+        CPI     R24, 233
+        LDI     R16, 3
+        CPC     R25, R16
+        BRCC    ??GetPotPosition_2
+        MOV     R16, R24
+        OR      R16, R25
+        BRNE    ??GetPotPosition_3
+??GetPotPosition_2:
+        LDI     R24, 1
+        LDI     R25, 0
+??GetPotPosition_3:
+        LDI     R30, ArrayReceivedSignal
+        STD     Z+16, R24
+        STD     Z+17, R25
+        LDI     R30, 2
+        RJMP    ?EPILOGUE_B2_L09
+        CFI EndBlock cfiBlock13
+        REQUIRE _A_PORTD
+        REQUIRE _A_DDRD
+        REQUIRE _A_PIND
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01cH
+__?EECR:
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01dH
+__?EEDR:
+
+        ASEGN ABSOLUTE:DATA:NOROOT,01eH
+__?EEARL:
+
+        COMMON INTVEC:CODE:ROOT(1)
+        ORG 8
+`??KeyDrive??INTVEC 8`:
+        RJMP    KeyDrive
+
+        COMMON INTVEC:CODE:ROOT(1)
+        ORG 12
+`??Sound??INTVEC 12`:
+        RJMP    Sound
+
+        RSEG INITTAB:CODE:NOROOT(0)
+`?<Segment init: TINY_Z>`:
+        DC8     SFE(TINY_Z) - SFB(TINY_Z)
+        DC8     SFB(TINY_Z)
+        DC16    0
+        REQUIRE ?need_segment_init
+
+        END
+//  505 
+//  506 
+//  507 
+//  508 
+// 
+//    19 bytes in segment ABSOLUTE
+// 1 170 bytes in segment CODE
+//     4 bytes in segment INITTAB
+//     4 bytes in segment INTVEC
+//    10 bytes in segment NEAR_F
+//    38 bytes in segment TINY_Z
+// 
+// 1 126 bytes of CODE memory (+ 62 bytes shared)
+//    38 bytes of DATA memory (+ 19 bytes shared)
+//
+//Errors: none
+//Warnings: none

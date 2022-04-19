@@ -1,0 +1,1489 @@
+###############################################################################
+#                                                                             #
+# IAR C/C++ Compiler V5.30.0.50166/W32 for Atmel AVR    13/Feb/2012  22:26:39 #
+# Copyright 1996-2009 IAR Systems AB.                                         #
+#                                                                             #
+#    Source file  =  C:\WORK\MetDet\_source\8042C\main.c                      #
+#    Command line =  C:\WORK\MetDet\_source\8042C\main.c --cpu=tiny2313 -mt   #
+#                    -o C:\WORK\MetDet\_source\8042C\Release\Obj\ -D NDEBUG   #
+#                    -lC C:\WORK\MetDet\_source\8042C\Release\List\ -lA       #
+#                    C:\WORK\MetDet\_source\8042C\Release\List\               #
+#                    --initializers_in_flash -z9 --no_cross_call              #
+#                    -DENABLE_BIT_DEFINITIONS -e -I "C:\Program Files\IAR     #
+#                    Systems\Embedded Workbench 5.3\avr\INC\" -I "C:\Program  #
+#                    Files\IAR Systems\Embedded Workbench 5.3\avr\INC\CLIB\"  #
+#                    --eeprom_size 128                                        #
+#    List file    =  C:\WORK\MetDet\_source\8042C\Release\List\main.lst       #
+#    Object file  =  C:\WORK\MetDet\_source\8042C\Release\Obj\main.r90        #
+#                                                                             #
+#                                                                             #
+###############################################################################
+
+C:\WORK\MetDet\_source\8042C\main.c
+      1          //программа импульсного металлоискателя 8042 V1 - на основе прошивки 1.0b demo, скачанной с сайта
+      2          //--no_cross_call  - ОБЯЗАТЕЛЬНО!!!
+      3          //avrdude -p t2313 -P avrdoper -c stk500v2 -U flash:w:$PROJ_DIR$\Release\Exe\$PROJ_FNAME$.hex:i -U lfuse:w:0xFF:m -U hfuse:w:0xDB:m -U efuse:w:0xFF:m -U lock:w:0x3C:m
+      4          #include <ioavr.h>
+
+   \                                 In  segment ABSOLUTE, at 0x59
+   \   <__C12> volatile __io _A_TIMSK
+   \                     _A_TIMSK:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x53
+   \   <__C24> volatile __io _A_TCCR0B
+   \                     _A_TCCR0B:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x52
+   \   <__C26> volatile __io _A_TCNT0
+   \                     _A_TCNT0:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x4f
+   \   <__C32> volatile __io _A_TCCR1A
+   \                     _A_TCCR1A:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x4e
+   \   <__C34> volatile __io _A_TCCR1B
+   \                     _A_TCCR1B:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x4a
+   \   <__C42> volatile __io _A_OCR1A
+   \                     _A_OCR1A:
+   \   00000000                      DS8 2
+
+   \                                 In  segment ABSOLUTE, at 0x44
+   \   <__C52> volatile __io _A_ICR1
+   \                     _A_ICR1:
+   \   00000000                      DS8 2
+
+   \                                 In  segment ABSOLUTE, at 0x41
+   \   <__C59> volatile __io _A_WDTCR
+   \                     _A_WDTCR:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x38
+   \   <__C75> volatile __io _A_PORTB
+   \                     _A_PORTB:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x37
+   \   <__C77> volatile __io _A_DDRB
+   \                     _A_DDRB:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x32
+   \   <__C87> volatile __io _A_PORTD
+   \                     _A_PORTD:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x31
+   \   <__C89> volatile __io _A_DDRD
+   \                     _A_DDRD:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x30
+   \   <__C91> volatile __io _A_PIND
+   \                     _A_PIND:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x2a
+   \   <__C103> volatile __io _A_UCSRB
+   \                     _A_UCSRB:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x29
+   \   <__C105> volatile __io _A_UBRRL
+   \                     _A_UBRRL:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x28
+   \   <__C107> volatile __io _A_ACSR
+   \                     _A_ACSR:
+   \   00000000                      DS8 1
+
+   \                                 In  segment ABSOLUTE, at 0x22
+   \   <__C111> volatile __io _A_UBRRH
+   \                     _A_UBRRH:
+   \   00000000                      DS8 1
+      5          #include <intrinsics.h>
+      6          #include <stdio.h>
+      7          #include <stdlib.h>
+      8          #include "ina90.h"
+      9          
+     10          #include "lcd.h"
+     11          #include "timeout.h"
+     12          
+     13          #include "hardware.h"
+     14          #include "global_var.h"
+
+   \                                 In  segment TINY_Z, align 1, keep-with-next
+   \   00000000                      REQUIRE `?<Segment init: TINY_Z>`
+   \   unsigned int __tiny ArrayReceivedSignal[4]
+   \                     ArrayReceivedSignal:
+   \   00000000                      DS8 8
+   \   unsigned long __tiny Integrator
+   \                     Integrator:
+   \   00000008                      DS8 4
+   \   unsigned long __tiny EchoSumm
+   \                     EchoSumm:
+   \   0000000C                      DS8 4
+   \   unsigned int volatile __tiny Sensitivity
+   \                     Sensitivity:
+   \   00000010                      DS8 2
+   \   unsigned int volatile __tiny ReceivedSignal
+   \                     ReceivedSignal:
+   \   00000012                      DS8 2
+   \   unsigned int volatile __tiny TimeTX
+   \                     TimeTX:
+   \   00000014                      DS8 2
+   \   unsigned int __tiny BaseValue
+   \                     BaseValue:
+   \   00000016                      DS8 2
+   \   unsigned char volatile __tiny TimeGuardAfterTXOFF
+   \                     TimeGuardAfterTXOFF:
+   \   00000018                      DS8 1
+   \   unsigned char volatile __tiny TimeGuardAfterRXON
+   \                     TimeGuardAfterRXON:
+   \   00000019                      DS8 1
+   \   unsigned char volatile __tiny TimeIntegration
+   \                     TimeIntegration:
+   \   0000001A                      DS8 1
+   \   unsigned char __tiny IntegratorCycleCount
+   \                     IntegratorCycleCount:
+   \   0000001B                      DS8 1
+   \   unsigned char volatile __tiny IntegratorCycleEnd
+   \                     IntegratorCycleEnd:
+   \   0000001C                      DS8 1
+   \   unsigned char __tiny Echo
+   \                     Echo:
+   \   0000001D                      DS8 1
+     15          
+     16          #define START_DELAY 500 //милисекунд для установления режимов усилителя по постоянному току
+     17          
+     18          //#define ENABLE_LCD // если включено - светодиоды не используются
+     19          #define ENABLE_SOUND
+     20          //#define ENABLE_USART
+     21          #define OLD_AVERAGE_FILTER  // усредняющий и помехоподавляющий фильтр
+     22          //#define FAST_AVERAGE_FILTER  // экспериментальный фильтр в разработке
+     23          #define USE_BATTERY_METER  // использовать пин для измерения степени разряженности аккума
+     24          //#define USE_MANUAL_TIME_TX // задать время накачки вручную - для особых датчиков
+     25          #define ManualTimeTX 0x75
+     26          
+     27          #define BoardV3 // на плате 3 версии находятся ускоряющие конденсаторы и открывающий вспомогательный транзистор в драйвере полевика
+     28          
+     29          #ifdef BoardV3
+     30            #define CAP_BOOST_TIME 0//5
+     31            #define TIME_GUARD 0x0c
+     32            #define START_TIME_TX 59 //65
+     33          #else
+     34            #define CAP_BOOST_TIME 0
+     35            #define TIME_GUARD 0x0a
+     36            #define START_TIME_TX 0x41
+     37          #endif
+     38          
+     39          //#define UTC_DELAY_1 6
+     40          //#define UTC_DELAY_2 6
+     41          
+     42          #define baudrate 38400 //156248 //38400
+     43          
+     44          void LowBatIndicationLoop (void);
+     45          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     46          void __watchdog_init (void)
+   \                     __watchdog_init:
+     47          {
+     48          //запускаю сторожевой таймер на 2 секунды
+     49          __watchdog_reset ();
+   \   00000000   95A8               WDR
+     50          WDTCR |= ((1<<WDCE)|(1<<WDE));
+   \   00000002   B501               IN      R16, 0x21
+   \   00000004   6108               ORI     R16, 0x18
+   \   00000006   BD01               OUT     0x21, R16
+     51          WDTCR = (1<<WDE)|(7<<WDP0);
+   \   00000008   E00F               LDI     R16, 15
+   \   0000000A   BD01               OUT     0x21, R16
+     52          __watchdog_reset ();
+   \   0000000C   95A8               WDR
+     53          }
+   \   0000000E   9508               RET
+   \   00000010                      REQUIRE _A_WDTCR
+     54          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     55          void InitTimers (void)
+   \                     InitTimers:
+     56          {
+     57          TCCR1A = 0x00;
+   \   00000000   E000               LDI     R16, 0
+   \   00000002   BD0F               OUT     0x2F, R16
+     58          TCCR1B |= ((1<<CS10) | (1<<WGM12));
+   \   00000004   B50E               IN      R16, 0x2E
+   \   00000006   6009               ORI     R16, 0x09
+   \   00000008   BD0E               OUT     0x2E, R16
+     59          OCR1A = 58500; //50000+6; //0xc350; //0xc350;
+   \   0000000A   E804               LDI     R16, 132
+   \   0000000C   EE14               LDI     R17, 228
+   \   0000000E   BD1B               OUT     0x2B, R17
+   \   00000010   BD0A               OUT     0x2A, R16
+     60          
+     61          TCCR0B |= (4<<CS00);
+   \   00000012   B703               IN      R16, 0x33
+   \   00000014   6004               ORI     R16, 0x04
+   \   00000016   BF03               OUT     0x33, R16
+     62          
+     63          TIMSK |= ((1<<TOIE0) | (1<<OCIE1A));
+   \   00000018   B709               IN      R16, 0x39
+   \   0000001A   6402               ORI     R16, 0x42
+   \   0000001C   BF09               OUT     0x39, R16
+     64          
+     65          ACSR |= (1<<ACIC);		
+   \   0000001E   9A42               SBI     0x08, 0x02
+     66          }
+   \   00000020   9508               RET
+   \   00000022                      REQUIRE _A_TIMSK
+   \   00000022                      REQUIRE _A_TCCR0B
+   \   00000022                      REQUIRE _A_TCCR1A
+   \   00000022                      REQUIRE _A_TCCR1B
+   \   00000022                      REQUIRE _A_OCR1A
+   \   00000022                      REQUIRE _A_ACSR
+     67          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     68          void InitPorts (void)
+   \                     InitPorts:
+     69          {
+     70          /*
+     71          PortPot |= (1<<Pot);
+     72          PortPotDir |= (1<<Pot);
+     73          
+     74          PortKeys |= ((1<<Q2) | (1<<Q0) | (1<<Q1));
+     75          PortKeysDir |= ((1<<Q2) | (1<<Q0) | (1<<Q1));
+     76          
+     77          PortSpeakerDir |= (1<<Speaker);
+     78          */
+     79          #ifndef ENABLE_LCD
+     80          PortLeds |= ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led5) | (1<<Led6));
+   \   00000000   B308               IN      R16, 0x18
+   \   00000002   6F0C               ORI     R16, 0xFC
+   \   00000004   BB08               OUT     0x18, R16
+     81          PortLedsDir |= ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led5) | (1<<Led6));
+   \   00000006   B307               IN      R16, 0x17
+   \   00000008   6F0C               ORI     R16, 0xFC
+   \   0000000A   BB07               OUT     0x17, R16
+     82          #endif //ENABLE_LCD
+     83          
+     84          /*
+     85          #ifdef USE_BATTERY_METER  //по идее это просто вход, поэтому можно просто включить подтяжку, на случай неиспользования измерителя
+     86          PortBatMeter |= (1<<BatMeter); //
+     87          #endif //USE_BATTERY_METER
+     88          */
+     89          
+     90          PortSys |=    ((1<<Pot) | (1<<Q2) | (1<<Q0) | (1<<Q1) | (1<<BatMeter));
+   \   0000000C   B302               IN      R16, 0x12
+   \   0000000E   670C               ORI     R16, 0x7C
+   \   00000010   BB02               OUT     0x12, R16
+     91          PortSysDir |= ((1<<Pot) | (1<<Q2) | (1<<Q0) | (1<<Q1) | (1<<Speaker));
+   \   00000012   B301               IN      R16, 0x11
+   \   00000014   650E               ORI     R16, 0x5E
+   \   00000016   BB01               OUT     0x11, R16
+     92          }
+   \   00000018   9508               RET
+   \   0000001A                      REQUIRE _A_PORTB
+   \   0000001A                      REQUIRE _A_DDRB
+   \   0000001A                      REQUIRE _A_PORTD
+   \   0000001A                      REQUIRE _A_DDRD
+     93          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+     94          void InitUsart (unsigned int baud)
+   \                     InitUsart:
+     95          {
+     96          UBRRH = (unsigned char)(baud>>8);
+   \   00000000   B912               OUT     0x02, R17
+     97          UBRRL = (unsigned char)baud;
+   \   00000002   B909               OUT     0x09, R16
+     98          
+     99          UCSRB |= (1<<TXEN);
+   \   00000004   9A53               SBI     0x0A, 0x03
+    100          }
+   \   00000006   9508               RET
+   \   00000008                      REQUIRE _A_UCSRB
+   \   00000008                      REQUIRE _A_UBRRL
+   \   00000008                      REQUIRE _A_UBRRH
+    101          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    102          void USARTSendChar (unsigned char data)
+   \                     USARTSendChar:
+    103          {
+    104          #ifdef ENABLE_USART
+    105          while (!( UCSRA & (1<<UDRE))); // ждем, пока отправится предыдущий байт
+    106          UDR = data;
+    107          #endif //ENABLE_USART
+    108          }
+   \   00000000   9508               RET
+    109          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    110          void InitMode (void)
+   \                     InitMode:
+    111          {
+    112          IntegratorCycleEnd = 0x00; // переменная глобальная, поэтому равна 0 после RESET
+   \   00000000   ....               LDI     R30, ArrayReceivedSignal
+   \   00000002   E000               LDI     R16, 0
+   \   00000004   8F04               STD     Z+28, R16
+    113          
+    114          //устанавливаем начальные временные интервалы
+    115          
+    116          TimeTX = START_TIME_TX-CAP_BOOST_TIME;
+   \   00000006   E30B               LDI     R16, 59
+   \   00000008   E010               LDI     R17, 0
+   \   0000000A   8B04               STD     Z+20, R16
+   \   0000000C   8B15               STD     Z+21, R17
+    117          TimeGuardAfterTXOFF = 0; // переменная глобальная, поэтому равна 0 после RESET
+   \   0000000E   8F10               STD     Z+24, R17
+    118          TimeGuardAfterRXON = 0;// + CAP_BOOST_TIME;// + UTC_DELAY_1; // переменная глобальная, поэтому равна 0 после RESET
+   \   00000010   8F11               STD     Z+25, R17
+    119          
+    120          TimeIntegration = 0x10;
+   \   00000012   E100               LDI     R16, 16
+   \   00000014   8F02               STD     Z+26, R16
+    121          __enable_interrupt();
+   \   00000016   9478               SEI
+    122          }
+   \   00000018   9508               RET
+    123          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    124          inline void GetPotPosition (void)
+   \                     GetPotPosition:
+    125          {
+   \   00000000   ....               RCALL   ?PROLOGUE2_L09
+    126          unsigned int counter = 0;
+   \   00000002   E080               LDI     R24, 0
+   \   00000004   E090               LDI     R25, 0
+    127          __disable_interrupt();
+   \   00000006   94F8               CLI
+    128          PortPotDir &= ~(1<<Pot); //переключаем выход на вход
+   \   00000008   988E               CBI     0x11, 0x06
+    129          PortPot &= ~(1<<Pot);
+   \   0000000A   9896               CBI     0x12, 0x06
+   \   0000000C   C001               RJMP    ??GetPotPosition_0
+    130          
+    131          while (PinPot & (1<<Pot)) { counter += PositionAddStep; } //ждем, пока напряжение упадет до порогового
+   \                     ??GetPotPosition_1:
+   \   0000000E   9601               ADIW    R25:R24, 1
+   \                     ??GetPotPosition_0:
+   \   00000010   9986               SBIC    0x10, 0x06
+   \   00000012   CFFD               RJMP    ??GetPotPosition_1
+    132          
+    133          //UDR = (unsigned char)counter;
+    134          
+    135          PortPot |= (1<<Pot); //переключаем вход на выход
+   \   00000014   9A96               SBI     0x12, 0x06
+    136          PortPotDir |= (1<<Pot);
+   \   00000016   9A8E               SBI     0x11, 0x06
+    137          counter -= PositionSub;
+   \   00000018   9707               SBIW    R25:R24, 7
+    138          
+    139          if ((counter > PositionMax) || (counter == 0)) counter = 1; // проверяем, не вылезло ли за пределы
+   \   0000001A   3E89               CPI     R24, 233
+   \   0000001C   E003               LDI     R16, 3
+   \   0000001E   0790               CPC     R25, R16
+   \   00000020   F418               BRCC    ??GetPotPosition_2
+   \   00000022   2F08               MOV     R16, R24
+   \   00000024   2B09               OR      R16, R25
+   \   00000026   F411               BRNE    ??GetPotPosition_3
+   \                     ??GetPotPosition_2:
+   \   00000028   E081               LDI     R24, 1
+   \   0000002A   E090               LDI     R25, 0
+    140          Sensitivity = counter;
+   \                     ??GetPotPosition_3:
+   \   0000002C   ....               LDI     R30, ArrayReceivedSignal
+   \   0000002E   8B80               STD     Z+16, R24
+   \   00000030   8B91               STD     Z+17, R25
+    141          
+    142          //UDR = (unsigned char)Sensitivity;
+    143          }
+   \   00000032   E0E2               LDI     R30, 2
+   \   00000034   ....               RJMP    ?EPILOGUE_B2_L09
+   \   00000036                      REQUIRE _A_PORTD
+   \   00000036                      REQUIRE _A_DDRD
+   \   00000036                      REQUIRE _A_PIND
+    144          
+
+   \                                 In  segment NEAR_F, align 1, keep-with-next
+    145          __flash signed int segmentsDec[5]={10000,1000,100,10,1};
+   \                     segmentsDec:
+   \   00000000   271003E80064       DC16 10000, 1000, 100, 10, 1
+   \              000A0001    
+    146          unsigned char String[5];
+    147          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    148          void CharToStringDec(signed int inp)
+   \                     CharToStringDec:
+    149          {
+   \   00000000   E020               LDI     R18, 0
+   \   00000002   ....               LDI     R30, String
+   \   00000004   8324               STD     Z+4, R18
+   \   00000006   8323               STD     Z+3, R18
+   \   00000008   8322               STD     Z+2, R18
+   \   0000000A   8321               STD     Z+1, R18
+   \   0000000C   8320               ST      Z, R18
+    150          unsigned char i;
+    151          String[0]=String[1]=String[2]=String[3]=String[4]=0;
+    152          // перевод
+    153          for(i=0;i<5;)
+   \   0000000E   C007               RJMP    ??CharToStringDec_0
+    154            {
+    155            if((inp-segmentsDec[i])>=0)
+    156              {
+    157              inp-=segmentsDec[i];
+   \                     ??CharToStringDec_1:
+   \   00000010   1B06               SUB     R16, R22
+   \   00000012   0B17               SBC     R17, R23
+    158              String[i]++;
+   \   00000014   2FE2               MOV     R30, R18
+   \   00000016   ....               SUBI    R30, (-(String) & 0xFF)
+   \   00000018   8130               LD      R19, Z
+   \   0000001A   9533               INC     R19
+   \   0000001C   8330               ST      Z, R19
+    159              }
+   \                     ??CharToStringDec_0:
+   \   0000001E   2F42               MOV     R20, R18
+   \   00000020   E050               LDI     R21, 0
+   \   00000022   0F44               LSL     R20
+   \   00000024   1F55               ROL     R21
+   \   00000026   01FA               MOVW    R31:R30, R21:R20
+   \   00000028   ....               SUBI    R30, LOW((-(segmentsDec) & 0xFFFF))
+   \   0000002A   ....               SBCI    R31, (-(segmentsDec) & 0xFFFF) >> 8
+   \   0000002C   9165               LPM     R22, Z+
+   \   0000002E   9174               LPM     R23, Z
+   \   00000030   01A8               MOVW    R21:R20, R17:R16
+   \   00000032   1B46               SUB     R20, R22
+   \   00000034   0B57               SBC     R21, R23
+   \   00000036   F762               BRPL    ??CharToStringDec_1
+    160            else i++;
+   \   00000038   9523               INC     R18
+    161            }
+   \   0000003A   3025               CPI     R18, 5
+   \   0000003C   F380               BRCS    ??CharToStringDec_0
+    162          }
+   \   0000003E   9508               RET
+    163          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    164          void LedBarUpdate (unsigned char level)
+   \                     LedBarUpdate:
+    165          {
+    166          if      (level >= threshold5) {  PortLeds = ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led5));   ToneNumber = 5; }
+   \   00000000   3F0F               CPI     R16, 255
+   \   00000002   F421               BRNE    ??LedBarUpdate_0
+   \   00000004   E70C               LDI     R16, 124
+   \   00000006   BB08               OUT     0x18, R16
+   \   00000008   E005               LDI     R16, 5
+   \   0000000A   C005               RJMP    ??LedBarUpdate_1
+    167          else if (level >= threshold4) {  PortLeds = ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led6));   ToneNumber = 4; }
+   \                     ??LedBarUpdate_0:
+   \   0000000C   3C09               CPI     R16, 201
+   \   0000000E   F030               BRCS    ??LedBarUpdate_2
+   \   00000010   EB0C               LDI     R16, 188
+   \   00000012   BB08               OUT     0x18, R16
+   \   00000014   E004               LDI     R16, 4
+   \                     ??LedBarUpdate_1:
+   \   00000016   ....               LDI     R30, ToneNumber
+   \   00000018   8300               ST      Z, R16
+   \   0000001A   9508               RET
+    168          else if (level >= threshold3) {  PortLeds = ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led5) | (1<<Led6));   ToneNumber = 3; }
+   \                     ??LedBarUpdate_2:
+   \   0000001C   3501               CPI     R16, 81
+   \   0000001E   F020               BRCS    ??LedBarUpdate_3
+   \   00000020   ED0C               LDI     R16, 220
+   \   00000022   BB08               OUT     0x18, R16
+   \   00000024   E003               LDI     R16, 3
+   \   00000026   CFF7               RJMP    ??LedBarUpdate_1
+    169          else if (level >= threshold2) {  PortLeds = ((1<<Led1) | (1<<Led2) | (1<<Led4) | (1<<Led5) | (1<<Led6));   ToneNumber = 2; }
+   \                     ??LedBarUpdate_3:
+   \   00000028   3105               CPI     R16, 21
+   \   0000002A   F020               BRCS    ??LedBarUpdate_4
+   \   0000002C   EE0C               LDI     R16, 236
+   \   0000002E   BB08               OUT     0x18, R16
+   \   00000030   E002               LDI     R16, 2
+   \   00000032   CFF1               RJMP    ??LedBarUpdate_1
+    170          else if (level >= threshold1) {  PortLeds = ((1<<Led1) | (1<<Led3) | (1<<Led4) | (1<<Led5) | (1<<Led6));   ToneNumber = 1; }
+   \                     ??LedBarUpdate_4:
+   \   00000034   3006               CPI     R16, 6
+   \   00000036   F020               BRCS    ??LedBarUpdate_5
+   \   00000038   EF04               LDI     R16, 244
+   \   0000003A   BB08               OUT     0x18, R16
+   \   0000003C   E001               LDI     R16, 1
+   \   0000003E   CFEB               RJMP    ??LedBarUpdate_1
+    171          else                          {  PortLeds = ((1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led5) | (1<<Led6));   ToneNumber = 0; }
+   \                     ??LedBarUpdate_5:
+   \   00000040   EF08               LDI     R16, 248
+   \   00000042   BB08               OUT     0x18, R16
+   \   00000044   E000               LDI     R16, 0
+   \   00000046   CFE7               RJMP    ??LedBarUpdate_1
+   \   00000048                      REQUIRE _A_PORTB
+    172          }
+    173          
+    174          #ifdef ENABLE_LCD
+    175          static __flash char str01 [] = " -<>+       "; //+000
+    176          static __flash char str02 [] = "Low Bat"; //+000
+    177          static __flash char str03 [] = "Wait"; //+000
+    178          
+    179          
+    180          void LCDBarUpdate (signed int level)
+    181          {
+    182          unsigned char col, pos;//, t;
+    183          signed int t;
+    184          
+    185          //if (level < 0) t = 0;
+    186          if (level < 256) t = (signed int)level;
+    187          else t = 255;
+    188          
+    189          if      (level >= threshold5) { ToneNumber = 5; }
+    190          else if (level >= threshold4) { ToneNumber = 4; }
+    191          else if (level >= threshold3) { ToneNumber = 3; }
+    192          else if (level >= threshold2) { ToneNumber = 2; }
+    193          else if (level >= threshold1) { ToneNumber = 1; }
+    194          else                          { ToneNumber = 0; }
+    195          
+    196          if (++LCDPrescaler > 2) 
+    197              {
+    198              LCDPrescaler = 0;
+    199          
+    200              lcd_gotoxy(0,0);//здесь показать уровень
+    201              lcd_puts_p(str01);
+    202              
+    203              /*
+    204              if (level < 0)  {  lcd_putc('-');  }
+    205                else    {    lcd_putc(' ');    }
+    206              */
+    207              CharToStringDec(level); // конвертация
+    208              
+    209              for (unsigned char v=1; v<5; v++) lcd_putc(String[v]+0x30);
+    210              
+    211              lcd_gotoxy(0,1);
+    212              col = (t+48) / 16;//рассчитываем номер знакоместа для рисования палки
+    213              
+    214              if (col>0) for (unsigned char z=0; z<col; z++) lcd_putc(0x05);//рисуем несколько полностью закрашенных знакомест
+    215              
+    216              //рассчитываем номер символа для отображения в знакоместе //5 вариантов
+    217              
+    218              pos = (t+48) - (col*16); // остаток
+    219              pos = (pos)/3;
+    220              
+    221              lcd_putc(pos); //0x00+
+    222              
+    223              for (unsigned char t=0; t<16; t++) lcd_putc(' '); //не чистим экран, а заполняем пробелами
+    224              }
+    225          }
+    226          
+    227          #endif //ENABLE_LCD
+    228          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    229          void DelayUnits (unsigned long time)
+   \                     DelayUnits:
+   \                     ??DelayUnits_0:
+    230          {
+    231          while (time--) {}
+   \   00000000   01A8               MOVW    R21:R20, R17:R16
+   \   00000002   01B9               MOVW    R23:R22, R19:R18
+   \   00000004   5001               SUBI    R16, 1
+   \   00000006   4010               SBCI    R17, 0
+   \   00000008   4020               SBCI    R18, 0
+   \   0000000A   4030               SBCI    R19, 0
+   \   0000000C   2B45               OR      R20, R21
+   \   0000000E   2B46               OR      R20, R22
+   \   00000010   2B47               OR      R20, R23
+   \   00000012   F7B1               BRNE    ??DelayUnits_0
+    232          }
+   \   00000014   9508               RET
+    233          
+    234          #pragma vector = TIMER1_COMPA_vect //вызывается раз в 5мс
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    235          __interrupt void KeyDrive (void)
+   \                     KeyDrive:
+    236          {
+   \   00000000   93AA               ST      -Y, R26
+   \   00000002   939A               ST      -Y, R25
+   \   00000004   938A               ST      -Y, R24
+   \   00000006   93FA               ST      -Y, R31
+   \   00000008   93EA               ST      -Y, R30
+   \   0000000A   923A               ST      -Y, R3
+   \   0000000C   922A               ST      -Y, R2
+   \   0000000E   921A               ST      -Y, R1
+   \   00000010   920A               ST      -Y, R0
+   \   00000012   937A               ST      -Y, R23
+   \   00000014   936A               ST      -Y, R22
+   \   00000016   935A               ST      -Y, R21
+   \   00000018   934A               ST      -Y, R20
+   \   0000001A   933A               ST      -Y, R19
+   \   0000001C   932A               ST      -Y, R18
+   \   0000001E   931A               ST      -Y, R17
+   \   00000020   930A               ST      -Y, R16
+   \   00000022   B7AF               IN      R26, 0x3F
+    237          //unsigned char temp = 10;
+    238          unsigned int ICRData = ICR1; //получаем данные о времени срабатывания компаратора
+   \   00000024   B584               IN      R24, 0x24
+   \   00000026   B595               IN      R25, 0x25
+    239          PortKeys &= ~(1<<Q1); //выключаем первый усилитель
+   \   00000028   9894               CBI     0x12, 0x04
+    240          DelayUnits (10);
+   \   0000002A   E00A               LDI     R16, 10
+   \   0000002C   E010               LDI     R17, 0
+   \   0000002E   E020               LDI     R18, 0
+   \   00000030   E030               LDI     R19, 0
+   \   00000032   ....               RCALL   DelayUnits
+    241          PortKeys &= ~(1<<Q0); //включаем накачку катушки
+   \   00000034   9893               CBI     0x12, 0x03
+    242          DelayUnits (TimeTX);
+   \   00000036   ....               LDI     R30, ArrayReceivedSignal
+   \   00000038   8904               LDD     R16, Z+20
+   \   0000003A   8915               LDD     R17, Z+21
+   \   0000003C   E020               LDI     R18, 0
+   \   0000003E   E030               LDI     R19, 0
+   \   00000040   ....               RCALL   DelayUnits
+    243          PortKeys |= (1<<Q0); //выключаем накачку катушки
+   \   00000042   9A93               SBI     0x12, 0x03
+    244          DelayUnits (TimeGuardAfterTXOFF);
+   \   00000044   ....               LDI     R30, ArrayReceivedSignal
+   \   00000046   8D00               LDD     R16, Z+24
+   \   00000048   E010               LDI     R17, 0
+   \   0000004A   E020               LDI     R18, 0
+   \   0000004C   E030               LDI     R19, 0
+   \   0000004E   ....               RCALL   DelayUnits
+    245          PortKeys |= (1<<Q1); //включаем первый усилитель
+   \   00000050   9A94               SBI     0x12, 0x04
+    246          DelayUnits (TimeGuardAfterRXON);
+   \   00000052   ....               LDI     R30, ArrayReceivedSignal
+   \   00000054   8D01               LDD     R16, Z+25
+   \   00000056   E010               LDI     R17, 0
+   \   00000058   E020               LDI     R18, 0
+   \   0000005A   E030               LDI     R19, 0
+   \   0000005C   ....               RCALL   DelayUnits
+    247          PortKeys &= ~(1<<Q2); //включаем интегратор
+   \   0000005E   9892               CBI     0x12, 0x02
+    248          DelayUnits (TimeIntegration);
+   \   00000060   ....               LDI     R30, ArrayReceivedSignal
+   \   00000062   8D02               LDD     R16, Z+26
+   \   00000064   E010               LDI     R17, 0
+   \   00000066   E020               LDI     R18, 0
+   \   00000068   E030               LDI     R19, 0
+   \   0000006A   ....               RCALL   DelayUnits
+    249          PortKeys |= (1<<Q2); //выключаем интегратор
+   \   0000006C   9A92               SBI     0x12, 0x02
+    250          
+    251          IntegratorCycleCount++;
+   \   0000006E   ....               LDI     R30, ArrayReceivedSignal
+   \   00000070   8D03               LDD     R16, Z+27
+   \   00000072   9503               INC     R16
+   \   00000074   8F03               STD     Z+27, R16
+    252          Integrator += ICRData;
+   \   00000076   E020               LDI     R18, 0
+   \   00000078   8540               LDD     R20, Z+8
+   \   0000007A   8551               LDD     R21, Z+9
+   \   0000007C   8562               LDD     R22, Z+10
+   \   0000007E   8573               LDD     R23, Z+11
+   \   00000080   0F48               ADD     R20, R24
+   \   00000082   1F59               ADC     R21, R25
+   \   00000084   1F62               ADC     R22, R18
+   \   00000086   1F72               ADC     R23, R18
+   \   00000088   8740               STD     Z+8, R20
+   \   0000008A   8751               STD     Z+9, R21
+   \   0000008C   8762               STD     Z+10, R22
+   \   0000008E   8773               STD     Z+11, R23
+    253          
+    254          //__enable_interrupt(); //вероятно таки придется разрешить здесь прерывания
+    255          
+    256          if (IntegratorCycleCount > 7)
+   \   00000090   3008               CPI     R16, 8
+   \   00000092   F068               BRCS    ??KeyDrive_0
+    257            {
+    258            IntegratorCycleCount = 0;
+   \   00000094   8F23               STD     Z+27, R18
+    259            Integrator = (Integrator >> 3); // деление на 8
+    260            ReceivedSignal = (unsigned int)Integrator;
+   \   00000096   018A               MOVW    R17:R16, R21:R20
+   \   00000098   019B               MOVW    R19:R18, R23:R22
+   \   0000009A   E043               LDI     R20, 3
+   \   0000009C   ....               RCALL   ?UL_SHR_L03
+   \   0000009E   8B02               STD     Z+18, R16
+   \   000000A0   8B13               STD     Z+19, R17
+    261            //UDR = ReceivedSignal>>8;
+    262            IntegratorCycleEnd = 0xFF;
+   \   000000A2   8F44               STD     Z+28, R20
+    263            Integrator = 0;
+   \   000000A4   E000               LDI     R16, 0
+   \   000000A6   8700               STD     Z+8, R16
+   \   000000A8   8701               STD     Z+9, R16
+   \   000000AA   8702               STD     Z+10, R16
+   \   000000AC   8703               STD     Z+11, R16
+    264            }
+    265          
+    266          GetPotPosition ();
+   \                     ??KeyDrive_0:
+   \   000000AE   ....               RCALL   GetPotPosition
+    267          __watchdog_reset ();
+   \   000000B0   95A8               WDR
+    268          }
+   \   000000B2   BFAF               OUT     0x3F, R26
+   \   000000B4   9109               LD      R16, Y+
+   \   000000B6   9119               LD      R17, Y+
+   \   000000B8   9129               LD      R18, Y+
+   \   000000BA   9139               LD      R19, Y+
+   \   000000BC   9149               LD      R20, Y+
+   \   000000BE   9159               LD      R21, Y+
+   \   000000C0   9169               LD      R22, Y+
+   \   000000C2   9179               LD      R23, Y+
+   \   000000C4   9009               LD      R0, Y+
+   \   000000C6   9019               LD      R1, Y+
+   \   000000C8   9029               LD      R2, Y+
+   \   000000CA   9039               LD      R3, Y+
+   \   000000CC   91E9               LD      R30, Y+
+   \   000000CE   91F9               LD      R31, Y+
+   \   000000D0   9189               LD      R24, Y+
+   \   000000D2   9199               LD      R25, Y+
+   \   000000D4   91A9               LD      R26, Y+
+   \   000000D6   9518               RETI
+   \   000000D8                      REQUIRE _A_ICR1
+   \   000000D8                      REQUIRE _A_PORTD
+
+   \                                 In  segment TINY_Z, align 1, keep-with-next
+   \   00000000                      REQUIRE `?<Segment init: TINY_Z>`
+   \   unsigned char volatile __tiny ToneNumber
+   \                     ToneNumber:
+   \   00000000                      DS8 1
+    269          
+    270          unsigned char SoundCycleCount;
+   \                     SoundCycleCount:
+   \   00000001                      DS8 1
+
+   \                                 In  segment TINY_Z, align 1, keep-with-next
+   \   00000000                      REQUIRE `?<Segment init: TINY_Z>`
+   \   unsigned char __tiny LCDPrescaler
+   \                     LCDPrescaler:
+   \   00000000                      DS8 1
+
+   \                                 In  segment TINY_Z, align 1, keep-with-next
+   \   00000000                      REQUIRE `?<Segment init: TINY_Z>`
+   \                     String:
+   \   00000000                      DS8 5
+    271          
+    272          #pragma vector = TIMER0_OVF0_vect 
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    273          __interrupt void Sound (void)
+   \                     Sound:
+    274          {
+   \   00000000   93EA               ST      -Y, R30
+   \   00000002   932A               ST      -Y, R18
+   \   00000004   931A               ST      -Y, R17
+   \   00000006   930A               ST      -Y, R16
+   \   00000008   B72F               IN      R18, 0x3F
+    275          TCNT0 = 0xFE; // перезагрузить таймер
+   \   0000000A   EF0E               LDI     R16, 254
+   \   0000000C   BF02               OUT     0x32, R16
+    276          if ((ToneNumber != 0) && (SoundCycleCount == 0))
+   \   0000000E   ....               LDI     R30, ToneNumber
+   \   00000010   8100               LD      R16, Z
+   \   00000012   2300               TST     R16
+   \   00000014   F061               BREQ    ??Sound_0
+   \   00000016   8101               LDD     R16, Z+1
+   \   00000018   2300               TST     R16
+   \   0000001A   F449               BRNE    ??Sound_0
+    277            {
+    278            SoundCycleCount = 16 - ToneNumber;
+   \   0000001C   E100               LDI     R16, 16
+   \   0000001E   8110               LD      R17, Z
+   \   00000020   1B01               SUB     R16, R17
+   \   00000022   8301               STD     Z+1, R16
+    279          #ifdef ENABLE_SOUND      
+    280            if (PortSpeaker & (1<<Speaker)) PortSpeaker &= ~(1<<Speaker); // speaker toggle
+   \   00000024   9B91               SBIS    0x12, 0x01
+   \   00000026   C002               RJMP    ??Sound_1
+   \   00000028   9891               CBI     0x12, 0x01
+   \   0000002A   C001               RJMP    ??Sound_0
+    281              else PortSpeaker |= (1<<Speaker);
+   \                     ??Sound_1:
+   \   0000002C   9A91               SBI     0x12, 0x01
+    282          #endif //ENABLE_SOUND       
+    283            }
+    284          if (SoundCycleCount) SoundCycleCount--;
+   \                     ??Sound_0:
+   \   0000002E   8101               LDD     R16, Z+1
+   \   00000030   2300               TST     R16
+   \   00000032   F011               BREQ    ??Sound_2
+   \   00000034   950A               DEC     R16
+   \   00000036   8301               STD     Z+1, R16
+    285          
+    286          #ifdef ENABLE_SOUND 
+    287          if (ToneNumber == 0) PortSpeaker &= ~(1<<Speaker); // не потребляем динамиком лишний ток
+   \                     ??Sound_2:
+   \   00000038   8100               LD      R16, Z
+   \   0000003A   2300               TST     R16
+   \   0000003C   F409               BRNE    ??Sound_3
+   \   0000003E   9891               CBI     0x12, 0x01
+    288          #endif //ENABLE_SOUND 
+    289          }
+   \                     ??Sound_3:
+   \   00000040   BF2F               OUT     0x3F, R18
+   \   00000042   9109               LD      R16, Y+
+   \   00000044   9119               LD      R17, Y+
+   \   00000046   9129               LD      R18, Y+
+   \   00000048   91E9               LD      R30, Y+
+   \   0000004A   9518               RETI
+   \   0000004C                      REQUIRE _A_TCNT0
+   \   0000004C                      REQUIRE _A_PORTD
+    290          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    291          void LowBatIndicationLoop (void) // отсюда никогда не выходим
+   \                     LowBatIndicationLoop:
+    292          {
+    293          #ifndef ENABLE_LCD      //светодиодный столбец
+    294          PortLeds = ((1<<Led1) | (1<<Led2) | (1<<Led3) | (1<<Led4) | (1<<Led5) | (1<<Led6)); //тушим все диоды
+   \   00000000   EF0C               LDI     R16, 252
+   \   00000002   BB08               OUT     0x18, R16
+    295          #endif //ENABLE_LCD
+    296          
+    297          //TimeTX = 0; //Полная накачка уже ни к чему
+    298          PortSysDir &= ~(1<<Q0); //Выключаем ключ совсем - Полная накачка уже ни к чему
+   \   00000004   988B               CBI     0x11, 0x03
+   \   00000006   C001               RJMP    ??LowBatIndicationLoop_0
+    299          #ifdef ENABLE_LCD //экран
+    300          lcd_clrscr();
+    301          lcd_gotoxy(4,0);
+    302          lcd_puts_p(str02);
+    303          #endif //ENABLE_LCD 
+    304          
+    305          while (1)// батарея разряжена
+    306              {
+    307              __delay_cycles((CtrlClockRate/1000)*500);
+    308              if (ToneNumber == 1) ToneNumber =0;
+    309                else ToneNumber = 1;
+    310                
+    311              #ifndef ENABLE_LCD      //светодиодный столбец
+    312              if (PortLeds & (1<<Led1)) PortLeds &= ~(1<<Led1); // мигаем зеленым диодом с интервалом 0,5с
+   \                     ??LowBatIndicationLoop_1:
+   \   00000008   98C2               CBI     0x18, 0x02
+   \                     ??LowBatIndicationLoop_0:
+   \   0000000A   E30F               LDI     R16, 63
+   \   0000000C   E412               LDI     R17, 66
+   \   0000000E   E02F               LDI     R18, 15
+   \   00000010   5001               SUBI    R16, 1
+   \   00000012   4010               SBCI    R17, 0
+   \   00000014   4020               SBCI    R18, 0
+   \   00000016   F7E1               BRNE    $-6
+   \   00000018   C000               RJMP    $+2
+   \   0000001A   0000               NOP
+   \   0000001C   ....               LDI     R30, ToneNumber
+   \   0000001E   8100               LD      R16, Z
+   \   00000020   3001               CPI     R16, 1
+   \   00000022   F411               BRNE    ??LowBatIndicationLoop_2
+   \   00000024   E000               LDI     R16, 0
+   \   00000026   C001               RJMP    ??LowBatIndicationLoop_3
+   \                     ??LowBatIndicationLoop_2:
+   \   00000028   E001               LDI     R16, 1
+   \                     ??LowBatIndicationLoop_3:
+   \   0000002A   8300               ST      Z, R16
+   \   0000002C   99C2               SBIC    0x18, 0x02
+   \   0000002E   CFEC               RJMP    ??LowBatIndicationLoop_1
+    313                else PortLeds |= (1<<Led1);
+   \   00000030   9AC2               SBI     0x18, 0x02
+   \   00000032   CFEB               RJMP    ??LowBatIndicationLoop_0
+   \   00000034                      REQUIRE _A_PORTB
+   \   00000034                      REQUIRE _A_DDRD
+    314              #endif //ENABLE_LCD
+    315              }
+    316          }
+    317          
+    318          
+
+   \                                 In  segment CODE, align 2, keep-with-next
+    319          int main (void)
+   \                     main:
+    320          {
+   \   00000000   ....               RCALL   ?PROLOGUE10_L09
+   \   00000002                      REQUIRE ?Register_R4_is_cg_reg
+   \   00000002                      REQUIRE ?Register_R5_is_cg_reg
+   \   00000002                      REQUIRE ?Register_R6_is_cg_reg
+   \   00000002                      REQUIRE ?Register_R7_is_cg_reg
+   \   00000002                      REQUIRE ?Register_R8_is_cg_reg
+   \   00000002                      REQUIRE ?Register_R9_is_cg_reg
+    321          signed int Ka=0, Kb=0, Kc=0, Kd=0, temp;//, tempdebug;
+   \   00000002   2488               CLR     R8
+   \   00000004   2499               CLR     R9
+   \   00000006   2444               CLR     R4
+   \   00000008   2455               CLR     R5
+   \   0000000A   2466               CLR     R6
+   \   0000000C   2477               CLR     R7
+   \   0000000E   E080               LDI     R24, 0
+    322          
+    323          InitPorts ();
+   \   00000010   ....               RCALL   InitPorts
+    324          
+    325          #ifdef ENABLE_LCD
+    326          lcd_init(LCD_DISP_ON);
+    327          
+    328          //lcd_clrscr();
+    329          lcd_gotoxy(6,0);
+    330          lcd_puts_p(str03);
+    331          #endif //ENABLE_LCD
+    332          
+    333          #ifdef ENABLE_USART
+    334          InitUsart (((CtrlClockRate/16)/baudrate)-1);
+    335          #endif //ENABLE_USART
+    336          InitTimers ();
+   \   00000012   ....               RCALL   InitTimers
+    337          InitMode ();
+   \   00000014   ....               RCALL   InitMode
+    338          __delay_cycles((CtrlClockRate/1000)*START_DELAY); // стартовая задержка
+   \   00000016   E30F               LDI     R16, 63
+   \   00000018   E412               LDI     R17, 66
+   \   0000001A   E02F               LDI     R18, 15
+   \   0000001C   5001               SUBI    R16, 1
+   \   0000001E   4010               SBCI    R17, 0
+   \   00000020   4020               SBCI    R18, 0
+   \   00000022   F7E1               BRNE    $-6
+   \   00000024   C000               RJMP    $+2
+   \   00000026   0000               NOP
+    339          __watchdog_init ();
+   \   00000028   ....               RCALL   __watchdog_init
+    340          
+    341          //    unsigned int tem;
+    342          
+    343          for (unsigned char i=0; i<8; i++)
+   \   0000002A   E0F8               LDI     R31, 8
+   \   0000002C   ....               LDI     R30, ArrayReceivedSignal
+    344            {
+    345            while (IntegratorCycleEnd == 0) {} // ждем пока пройдет интегрирование
+   \                     ??main_0:
+   \   0000002E   8D04               LDD     R16, Z+28
+   \   00000030   2300               TST     R16
+   \   00000032   F3E9               BREQ    ??main_0
+    346            EchoSumm = EchoSumm + ReceivedSignal;
+   \   00000034   8902               LDD     R16, Z+18
+   \   00000036   8913               LDD     R17, Z+19
+   \   00000038   8544               LDD     R20, Z+12
+   \   0000003A   8555               LDD     R21, Z+13
+   \   0000003C   8566               LDD     R22, Z+14
+   \   0000003E   8577               LDD     R23, Z+15
+   \   00000040   0F40               ADD     R20, R16
+   \   00000042   1F51               ADC     R21, R17
+   \   00000044   1D68               ADC     R22, R8
+   \   00000046   1D78               ADC     R23, R8
+   \   00000048   8744               STD     Z+12, R20
+   \   0000004A   8755               STD     Z+13, R21
+   \   0000004C   8766               STD     Z+14, R22
+   \   0000004E   8777               STD     Z+15, R23
+    347            
+    348          
+    349          //   tem = ReceivedSignal >> 8;  
+    350          //  USARTSendChar ((unsigned char)tem);
+    351          //  USARTSendChar ((unsigned char)ReceivedSignal); 
+    352            
+    353            IntegratorCycleEnd = 0;
+   \   00000050   8E84               STD     Z+28, R8
+    354            }
+   \   00000052   95FA               DEC     R31
+   \   00000054   F761               BRNE    ??main_0
+    355          
+    356          //USARTSendChar ((unsigned char)EchoSumm);
+    357          
+    358          
+    359          EchoSumm = EchoSumm >> 8; // деление на 256
+   \   00000056   2F05               MOV     R16, R21
+   \   00000058   8754               STD     Z+12, R21
+   \   0000005A   8765               STD     Z+13, R22
+   \   0000005C   8776               STD     Z+14, R23
+   \   0000005E   8687               STD     Z+15, R8
+    360          Echo = (unsigned char)(EchoSumm);
+    361          
+    362          //USARTSendChar (Echo);
+    363          
+    364          Echo -= 0x32;
+   \   00000060   5302               SUBI    R16, 50
+   \   00000062   8F05               STD     Z+29, R16
+    365          
+    366          //USARTSendChar (Echo);   // эхо, полученное при калибровке
+    367          
+    368          if (Echo >= 0x19) // катушка в порядке, эхо достаточной величины
+   \   00000064   3109               CPI     R16, 25
+   \   00000066   F408               BRCC    $+2+2
+   \   00000068   C0C1               RJMP    ??main_1
+    369            {
+    370            if      (Echo <= 0x37) {Ka = 0x19; Kb = 0x37; Kc = 0xA0; Kd = 0x8C; }
+   \   0000006A   3308               CPI     R16, 56
+   \   0000006C   F440               BRCC    ??main_2
+   \   0000006E   E109               LDI     R16, 25
+   \   00000070   2E80               MOV     R8, R16
+   \   00000072   E307               LDI     R16, 55
+   \   00000074   2E40               MOV     R4, R16
+   \   00000076   EA00               LDI     R16, 160
+   \   00000078   2E60               MOV     R6, R16
+   \   0000007A   E88C               LDI     R24, 140
+   \   0000007C   C01C               RJMP    ??main_3
+    371            else if (Echo <= 0x4B) {Ka = 0x37; Kb = 0x4B; Kc = 0x8C; Kd = 0x67; }
+   \                     ??main_2:
+   \   0000007E   340C               CPI     R16, 76
+   \   00000080   F440               BRCC    ??main_4
+   \   00000082   E307               LDI     R16, 55
+   \   00000084   2E80               MOV     R8, R16
+   \   00000086   E40B               LDI     R16, 75
+   \   00000088   2E40               MOV     R4, R16
+   \   0000008A   E80C               LDI     R16, 140
+   \   0000008C   2E60               MOV     R6, R16
+   \   0000008E   E687               LDI     R24, 103
+   \   00000090   C012               RJMP    ??main_3
+    372            else if (Echo <= 0x52) {Ka = 0x4B; Kb = 0x52; Kc = 0x67; Kd = 0x52; }
+   \                     ??main_4:
+   \   00000092   3503               CPI     R16, 83
+   \   00000094   F440               BRCC    ??main_5
+   \   00000096   E40B               LDI     R16, 75
+   \   00000098   2E80               MOV     R8, R16
+   \   0000009A   E502               LDI     R16, 82
+   \   0000009C   2E40               MOV     R4, R16
+   \   0000009E   E607               LDI     R16, 103
+   \   000000A0   2E60               MOV     R6, R16
+   \   000000A2   E582               LDI     R24, 82
+   \   000000A4   C008               RJMP    ??main_3
+    373            else if (Echo <= 0x5F) {Ka = 0x52; Kb = 0x5F; Kc = 0x52; Kd = 0x41; }
+   \                     ??main_5:
+   \   000000A6   3600               CPI     R16, 96
+   \   000000A8   F430               BRCC    ??main_3
+   \   000000AA   E502               LDI     R16, 82
+   \   000000AC   2E80               MOV     R8, R16
+   \   000000AE   E50F               LDI     R16, 95
+   \   000000B0   2E40               MOV     R4, R16
+   \   000000B2   2C68               MOV     R6, R8
+   \   000000B4   E481               LDI     R24, 65
+    374            
+    375            temp = Echo - Ka;
+    376            temp = temp * (Kd - Kc);
+    377            temp = Kc + (temp / (Kb - Ka));
+    378          
+    379          #ifndef USE_MANUAL_TIME_TX
+    380            TimeTX = temp - CAP_BOOST_TIME;  //устанавливаем рабочие тайминги
+   \                     ??main_3:
+   \   000000B6   8D05               LDD     R16, Z+29
+   \   000000B8   E010               LDI     R17, 0
+   \   000000BA   1908               SUB     R16, R8
+   \   000000BC   4010               SBCI    R17, 0
+   \   000000BE   2F48               MOV     R20, R24
+   \   000000C0   E050               LDI     R21, 0
+   \   000000C2   1946               SUB     R20, R6
+   \   000000C4   4050               SBCI    R21, 0
+   \   000000C6   ....               RCALL   ?S_MUL_L02
+   \   000000C8   1848               SUB     R4, R8
+   \   000000CA   0859               SBC     R5, R9
+   \   000000CC   01A2               MOVW    R21:R20, R5:R4
+   \   000000CE   ....               RCALL   ?SS_DIVMOD_L02
+   \   000000D0   0E60               ADD     R6, R16
+   \   000000D2   1E71               ADC     R7, R17
+   \   000000D4   ....               LDI     R30, ArrayReceivedSignal
+   \   000000D6   8A64               STD     Z+20, R6
+   \   000000D8   8A75               STD     Z+21, R7
+    381            if (Echo >= 0x60) TimeTX = 0x41 - CAP_BOOST_TIME;
+   \   000000DA   8D05               LDD     R16, Z+29
+   \   000000DC   3600               CPI     R16, 96
+   \   000000DE   F018               BRCS    ??main_6
+   \   000000E0   E401               LDI     R16, 65
+   \   000000E2   8B04               STD     Z+20, R16
+   \   000000E4   8A95               STD     Z+21, R9
+    382          #endif
+    383            
+    384          #ifdef USE_MANUAL_TIME_TX 
+    385            TimeTX = ManualTimeTX;
+    386          #endif //USE_MANUAL_TIME_TX 
+    387          
+    388            TimeGuardAfterTXOFF = TIME_GUARD; 
+   \                     ??main_6:
+   \   000000E6   E00C               LDI     R16, 12
+   \   000000E8   8F00               STD     Z+24, R16
+    389            TimeGuardAfterRXON = 0x00;// + CAP_BOOST_TIME;// + UTC_DELAY_1 + UTC_DELAY_2;
+   \   000000EA   8E91               STD     Z+25, R9
+    390            TimeIntegration = 0x32;
+   \   000000EC   E302               LDI     R16, 50
+   \   000000EE   8F02               STD     Z+26, R16
+    391            
+    392            USARTSendChar (TimeTX);  // вычисленное время накачки
+   \   000000F0   8904               LDD     R16, Z+20
+   \   000000F2   8915               LDD     R17, Z+21
+    393          /*
+    394            for (unsigned char i=0; i<10; i++) // пропускаем 10 циклов для устаканивания
+    395              {
+    396             while (IntegratorCycleEnd == 0) {} // пропускаем 1 цикл
+    397             IntegratorCycleEnd = 0;
+    398              }  
+    399          */
+    400          
+    401          while (IntegratorCycleEnd == 0) {} // пропускаем 1 цикл, этого достаточно
+   \                     ??main_7:
+   \   000000F4   8D04               LDD     R16, Z+28
+   \   000000F6   2300               TST     R16
+   \   000000F8   F3E9               BREQ    ??main_7
+    402          IntegratorCycleEnd = 0;  
+   \   000000FA   8E94               STD     Z+28, R9
+    403            
+    404            
+    405          //unsigned int tem;  
+    406            
+    407          
+    408            EchoSumm = 0;
+   \   000000FC   8694               STD     Z+12, R9
+   \   000000FE   8695               STD     Z+13, R9
+   \   00000100   8696               STD     Z+14, R9
+   \   00000102   8697               STD     Z+15, R9
+    409            for (unsigned char i=0; i<32; i++)
+   \   00000104   E240               LDI     R20, 32
+    410              {
+    411              while (IntegratorCycleEnd == 0) {} // ждем пока пройдет интегрирование
+   \                     ??main_8:
+   \   00000106   8D04               LDD     R16, Z+28
+   \   00000108   2300               TST     R16
+   \   0000010A   F3E9               BREQ    ??main_8
+    412          /*    
+    413                tem = ReceivedSignal >> 8;
+    414            
+    415            USARTSendChar ((unsigned char)tem);  
+    416            USARTSendChar ((unsigned char)ReceivedSignal);
+    417          */  
+    418              
+    419              EchoSumm += ReceivedSignal;
+   \   0000010C   8902               LDD     R16, Z+18
+   \   0000010E   8913               LDD     R17, Z+19
+   \   00000110   8404               LDD     R0, Z+12
+   \   00000112   8415               LDD     R1, Z+13
+   \   00000114   8426               LDD     R2, Z+14
+   \   00000116   8437               LDD     R3, Z+15
+   \   00000118   0E00               ADD     R0, R16
+   \   0000011A   1E11               ADC     R1, R17
+   \   0000011C   1C29               ADC     R2, R9
+   \   0000011E   1C39               ADC     R3, R9
+   \   00000120   8604               STD     Z+12, R0
+   \   00000122   8615               STD     Z+13, R1
+   \   00000124   8626               STD     Z+14, R2
+   \   00000126   8637               STD     Z+15, R3
+    420              IntegratorCycleEnd = 0;
+   \   00000128   8E94               STD     Z+28, R9
+    421              }
+   \   0000012A   954A               DEC     R20
+   \   0000012C   F761               BRNE    ??main_8
+    422            EchoSumm = EchoSumm >> 5; // деление на 32
+    423            BaseValue = (unsigned int)EchoSumm; // получили базовое значение при отсутствии металла
+   \   0000012E   0180               MOVW    R17:R16, R1:R0
+   \   00000130   0191               MOVW    R19:R18, R3:R2
+   \   00000132   E045               LDI     R20, 5
+   \   00000134   ....               RCALL   ?UL_SHR_L03
+   \   00000136   8B06               STD     Z+22, R16
+   \   00000138   8B17               STD     Z+23, R17
+   \   0000013A   C005               RJMP    ??main_9
+    424            
+    425          /*
+    426            tem = BaseValue >> 8;
+    427            
+    428            USARTSendChar ((unsigned char)tem);  
+    429            USARTSendChar ((unsigned char)BaseValue);
+    430          */
+    431            
+    432            //USARTSendChar (BaseValue>>8); //базовое значение
+    433            
+    434            while (1) // основной цикл обнаружения металла
+    435              {
+    436              while (IntegratorCycleEnd == 0) {} // ждем пока пройдет интегрирование
+    437              IntegratorCycleEnd = 0;
+    438              
+    439          #ifdef OLD_AVERAGE_FILTER   //усреднитель сигнала
+    440              EchoSumm = 0;
+    441              for (unsigned char z=0; z<(ArrayLength-1); z++)  { ArrayReceivedSignal [z] = ArrayReceivedSignal [z+1];  } // сдвинули массив к 0 ячейке
+    442              ArrayReceivedSignal [ArrayLength-1] = ReceivedSignal; // в последнюю ячейку вносим свежее значение
+    443              
+    444              for (unsigned char z=0; z<ArrayLength; z++) EchoSumm += ArrayReceivedSignal [z]; // суммируем последние показания
+    445              ReceivedSignal = (unsigned int)(EchoSumm / ArrayLength);
+    446          #endif //OLD_AVERAGE_FILTER
+    447          
+    448          #ifdef FAST_AVERAGE_FILTER   //усреднитель сигнала (быстрый)
+    449          
+    450          #endif //OLD_AVERAGE_FILTER    
+    451              
+    452          #ifdef USE_BATTERY_METER  //измерение напряжения аккума
+    453              PortBatMeterDir |= (1<<BatMeter); // назначаем как выход, для преодоления гистерезиса
+    454              __delay_cycles((CtrlClockRate/1000000)*2); // чтобы устаканилось
+    455              PortBatMeterDir &= ~(1<<BatMeter); // назначаем как вход
+    456              __delay_cycles((CtrlClockRate/1000000)*2); // чтобы устаканилось
+    457              
+    458              if (!(PinBatMeter & (1<<BatMeter))) LowBatIndicationLoop (); // и меряем на порту 2,10 В
+    459          #endif //USE_BATTERY_METER
+    460              
+    461              //UDR = ReceivedSignal;
+    462              
+    463                //tem = ReceivedSignal >> 8;
+    464            
+    465            //USARTSendChar ((unsigned char)ReceivedSignal);
+    466            //USARTSendChar ((unsigned char)tem);
+    467              
+    468              temp = ReceivedSignal - BaseValue; // сравнение с опорным значением
+    469              
+    470              /*
+    471              tempdebug = temp + 127;
+    472              if (tempdebug > 255) tempdebug = 255;
+    473              if (tempdebug < 0) tempdebug = 0;
+    474              UDR = tempdebug;
+    475              */
+    476              
+    477              temp += temp; // разницу удваиваем со знаком
+    478              //temp += temp; // разницу удваиваем со знаком
+    479              //temp = 250;
+    480              temp = temp / ((signed int)Sensitivity);
+    481              //USARTSendChar ((unsigned char)Sensitivity);
+    482              
+    483              #ifndef ENABLE_LCD      //светодиодный столбец
+    484              if (temp < 0) temp = 0; // следим за рамками
+    485              if (temp > 254) temp = 255;
+   \                     ??main_10:
+   \   0000013C   3F0F               CPI     R16, 255
+   \   0000013E   4010               SBCI    R17, 0
+   \   00000140   F00C               BRLT    ??main_11
+   \   00000142   EF0F               LDI     R16, 255
+    486              USARTSendChar ((unsigned char)temp); // результат
+    487              LedBarUpdate ((unsigned char)temp);
+   \                     ??main_11:
+   \   00000144   ....               RCALL   LedBarUpdate
+   \                     ??main_9:
+   \   00000146   ....               LDI     R30, ArrayReceivedSignal
+   \   00000148   8D04               LDD     R16, Z+28
+   \   0000014A   2300               TST     R16
+   \   0000014C   F3E1               BREQ    ??main_9
+   \   0000014E   E000               LDI     R16, 0
+   \   00000150   8E94               STD     Z+28, R9
+   \   00000152   8694               STD     Z+12, R9
+   \   00000154   8695               STD     Z+13, R9
+   \   00000156   8696               STD     Z+14, R9
+   \   00000158   8697               STD     Z+15, R9
+   \                     ??main_12:
+   \   0000015A   2F10               MOV     R17, R16
+   \   0000015C   0F11               LSL     R17
+   \   0000015E   ....               LDI     R30, ArrayReceivedSignal
+   \   00000160   0FE1               ADD     R30, R17
+   \   00000162   8122               LDD     R18, Z+2
+   \   00000164   8133               LDD     R19, Z+3
+   \   00000166   8320               ST      Z, R18
+   \   00000168   8331               STD     Z+1, R19
+   \   0000016A   9503               INC     R16
+   \   0000016C   3003               CPI     R16, 3
+   \   0000016E   F3A8               BRCS    ??main_12
+   \   00000170   ....               LDI     R30, ArrayReceivedSignal
+   \   00000172   8902               LDD     R16, Z+18
+   \   00000174   8913               LDD     R17, Z+19
+   \   00000176   8306               STD     Z+6, R16
+   \   00000178   8317               STD     Z+7, R17
+   \   0000017A   E040               LDI     R20, 0
+   \                     ??main_13:
+   \   0000017C   2F04               MOV     R16, R20
+   \   0000017E   0F00               LSL     R16
+   \   00000180   0FE0               ADD     R30, R16
+   \   00000182   8100               LD      R16, Z
+   \   00000184   8111               LDD     R17, Z+1
+   \   00000186   ....               LDI     R30, ArrayReceivedSignal
+   \   00000188   8404               LDD     R0, Z+12
+   \   0000018A   8415               LDD     R1, Z+13
+   \   0000018C   8426               LDD     R2, Z+14
+   \   0000018E   8437               LDD     R3, Z+15
+   \   00000190   0E00               ADD     R0, R16
+   \   00000192   1E11               ADC     R1, R17
+   \   00000194   1C29               ADC     R2, R9
+   \   00000196   1C39               ADC     R3, R9
+   \   00000198   8604               STD     Z+12, R0
+   \   0000019A   8615               STD     Z+13, R1
+   \   0000019C   8626               STD     Z+14, R2
+   \   0000019E   8637               STD     Z+15, R3
+   \   000001A0   9543               INC     R20
+   \   000001A2   3044               CPI     R20, 4
+   \   000001A4   F358               BRCS    ??main_13
+   \   000001A6   0180               MOVW    R17:R16, R1:R0
+   \   000001A8   0191               MOVW    R19:R18, R3:R2
+   \   000001AA   E042               LDI     R20, 2
+   \   000001AC   ....               RCALL   ?UL_SHR_L03
+   \   000001AE   8B02               STD     Z+18, R16
+   \   000001B0   8B13               STD     Z+19, R17
+   \   000001B2   9A8D               SBI     0x11, 0x05
+   \   000001B4   E006               LDI     R16, 6
+   \   000001B6   950A               DEC     R16
+   \   000001B8   F7F1               BRNE    $-2
+   \   000001BA   C000               RJMP    $+2
+   \   000001BC   988D               CBI     0x11, 0x05
+   \   000001BE   E006               LDI     R16, 6
+   \   000001C0   950A               DEC     R16
+   \   000001C2   F7F1               BRNE    $-2
+   \   000001C4   C000               RJMP    $+2
+   \   000001C6   9B85               SBIS    0x10, 0x05
+   \   000001C8   ....               RCALL   LowBatIndicationLoop
+   \                     ??main_14:
+   \   000001CA   ....               LDI     R30, ArrayReceivedSignal
+   \   000001CC   8902               LDD     R16, Z+18
+   \   000001CE   8913               LDD     R17, Z+19
+   \   000001D0   8926               LDD     R18, Z+22
+   \   000001D2   8937               LDD     R19, Z+23
+   \   000001D4   1B02               SUB     R16, R18
+   \   000001D6   0B13               SBC     R17, R19
+   \   000001D8   0F00               LSL     R16
+   \   000001DA   1F11               ROL     R17
+   \   000001DC   8940               LDD     R20, Z+16
+   \   000001DE   8951               LDD     R21, Z+17
+   \   000001E0   ....               RCALL   ?SS_DIVMOD_L02
+   \   000001E2   2311               TST     R17
+   \   000001E4   F00A               BRMI    $+2+2
+   \   000001E6   CFAA               RJMP    ??main_10
+   \   000001E8   E000               LDI     R16, 0
+   \   000001EA   CFAC               RJMP    ??main_11
+    488              #endif //ENABLE_LCD
+    489              
+    490              #ifdef ENABLE_LCD // тут своя процедура вывода полосы
+    491              if (temp < -48) temp = -48; // следим за рамками
+    492              //if (temp > 9998) temp = 9999;
+    493              
+    494              
+    495              //if (++LCDPrescaler > 2) 
+    496              //{
+    497              //LCDPrescaler = 0;
+    498              LCDBarUpdate (temp);
+    499              //}
+    500              #endif //ENABLE_LCD
+    501              }
+    502            }
+    503            else LowBatIndicationLoop ();
+   \                     ??main_1:
+   \   000001EC   ....               RCALL   LowBatIndicationLoop
+    504          }
+   \   000001EE   E000               LDI     R16, 0
+   \   000001F0   E010               LDI     R17, 0
+   \   000001F2   E0EA               LDI     R30, 10
+   \   000001F4   ....               RJMP    ?EPILOGUE_B10_L09
+   \   000001F6                      REQUIRE _A_DDRD
+   \   000001F6                      REQUIRE _A_PIND
+
+   \                                 In  segment INTVEC, offset 0x8, root
+   \                     `??KeyDrive??INTVEC 8`:
+   \   00000008   ....               RJMP    KeyDrive
+
+   \                                 In  segment INTVEC, offset 0xc, root
+   \                     `??Sound??INTVEC 12`:
+   \   0000000C   ....               RJMP    Sound
+    505          
+    506          
+    507          
+    508          
+
+   Maximum stack usage in bytes:
+
+     Function                  CSTACK RSTACK
+     --------                  ------ ------
+     CharToStringDec               0      2
+     DelayUnits                    0      2
+     GetPotPosition                2      2
+     InitMode                      0      2
+     InitPorts                     0      2
+     InitTimers                    0      2
+     InitUsart                     0      2
+     KeyDrive                     18      4
+       -> DelayUnits              18      2
+       -> DelayUnits              18      2
+       -> DelayUnits              18      2
+       -> DelayUnits              18      2
+       -> DelayUnits              18      2
+       -> GetPotPosition          18      2
+     LedBarUpdate                  0      2
+     LowBatIndicationLoop          0      2
+     Sound                         4      2
+     USARTSendChar                 0      2
+     __watchdog_init               0      2
+     main                         10      4
+       -> InitPorts               10      2
+       -> InitTimers              10      2
+       -> InitMode                10      2
+       -> __watchdog_init         10      2
+       -> LedBarUpdate            10      2
+       -> LowBatIndicationLoop    10      2
+       -> LowBatIndicationLoop    10      2
+
+
+   Segment part sizes:
+
+     Function/Label       Bytes
+     --------------       -----
+     _A_TIMSK                1
+     _A_TCCR0B               1
+     _A_TCNT0                1
+     _A_TCCR1A               1
+     _A_TCCR1B               1
+     _A_OCR1A                2
+     _A_ICR1                 2
+     _A_WDTCR                1
+     _A_PORTB                1
+     _A_DDRB                 1
+     _A_PORTD                1
+     _A_DDRD                 1
+     _A_PIND                 1
+     _A_UCSRB                1
+     _A_UBRRL                1
+     _A_ACSR                 1
+     _A_UBRRH                1
+     ArrayReceivedSignal    30
+     Integrator
+     EchoSumm
+     Sensitivity
+     ReceivedSignal
+     TimeTX
+     BaseValue
+     TimeGuardAfterTXOFF
+     TimeGuardAfterRXON
+     TimeIntegration
+     IntegratorCycleCount
+     IntegratorCycleEnd
+     Echo
+     __watchdog_init        16
+     InitTimers             34
+     InitPorts              26
+     InitUsart               8
+     USARTSendChar           2
+     InitMode               26
+     GetPotPosition         54
+     segmentsDec            10
+     CharToStringDec        64
+     LedBarUpdate           72
+     DelayUnits             22
+     KeyDrive              216
+     ToneNumber              2
+     SoundCycleCount
+     LCDPrescaler            1
+     String                  5
+     Sound                  76
+     LowBatIndicationLoop   52
+     main                  502
+     ??KeyDrive??INTVEC 8    2
+     ??Sound??INTVEC 12      2
+      Others                 4
+
+ 
+    19 bytes in segment ABSOLUTE
+ 1 170 bytes in segment CODE
+     4 bytes in segment INITTAB
+     4 bytes in segment INTVEC
+    10 bytes in segment NEAR_F
+    38 bytes in segment TINY_Z
+ 
+ 1 126 bytes of CODE memory (+ 62 bytes shared)
+    38 bytes of DATA memory (+ 19 bytes shared)
+
+Errors: none
+Warnings: none
